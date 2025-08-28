@@ -10,9 +10,15 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
+    models/doctor.cpp \
+    models/patient.cpp \
+    models/user.cpp \
     server.cpp
 
 HEADERS += \
+    models/doctor.h \
+    models/patient.h \
+    models/user.h \
     server.h
 
 FORMS += \
@@ -22,3 +28,5 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
