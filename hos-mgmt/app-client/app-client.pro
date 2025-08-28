@@ -1,4 +1,6 @@
-QT       += core gui
+QT       += core gui \
+    network \
+    qml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,10 +12,12 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    client.cpp
+    client.cpp \
+    src/authmanager.cpp
 
 HEADERS += \
-    client.h
+    client.h \
+    src/authmanager.h
 
 FORMS += \
     client.ui
@@ -22,3 +26,10 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    client.qrc
+
+DISTFILES += \
+    qml/LoginScreen.qml \
+    qml/Main.qml

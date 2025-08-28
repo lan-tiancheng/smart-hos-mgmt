@@ -4,6 +4,22 @@ User::User() {}
 
 User::~User() {}
 
+// ========================= age =========================
+int User::age() const { return m_age; }
+void User::setAge(const int age) { m_age = age; }
+
+// ========================= gender =========================
+QString User::gender() const { return m_gender; }
+void User::setGender(const QString &gender) { m_gender = gender; }
+
+// ========================= phone number =========================
+QString User::phonenumber() const { return m_phonenumber; }
+void User::setPhonenumber(const QString &phonenumber) { m_phonenumber = phonenumber; }
+
+// ========================= address =========================
+QString User::address() const { return m_address; }
+void User::setAddress(const QString &address) { m_address = address; }
+
 QString User::id() const { return m_id; }
 void User::setId(const QString &id) { m_id = id; }
 

@@ -32,6 +32,7 @@ public:
     QJsonObject toJson() const ;
     // 从QJsonObject还原History对象
     void fromJson(const QJsonObject &json) ;
+
 };
 
 class Patient : public User {
@@ -50,7 +51,34 @@ public:
     // 从JSON恢复患者信息
     void fromJson(const QJsonObject &json) override;
 
+    // 患者基本信息输入 实现健康评估界面
+    void setHeight(double h) { height = h; }
+    double getHeight() const { return height; }
+
+    void setWeight(double w) { weight = w; }
+    double getWeight() const { return weight; }
+
+    void setLungCapacity(double lc) { lungCapacity = lc; }
+    double getLungCapacity() const { return lungCapacity; }
+    void setHeartRate(int hr) { heartRate = hr; }
+    int getHeartRate() const { return heartRate; }
+
+    void setBloodPressure(int systolic, int diastolic) {
+        systolicBP = systolic;
+        diastolicBP = diastolic;
+    }
+    int getSystolicBP() const { return systolicBP; }
+    int getDiastolicBP() const { return diastolicBP; }
+    bool isHealthy() const;// 判断病人是否健康
+
 private:
+    // 患者健康信息
+    double height;       // 身高，单位米
+    double weight;       // 体重，单位公斤
+    double lungCapacity; // 肺活量，单位毫升
+    int heartRate;       // 心率（次/分钟）
+    int systolicBP;      // 收缩压（mmHg）
+    int diastolicBP;     // 舒张压（mmHg）
     History m_medicalHistory;  // 保存患者的病历历史
 };
 

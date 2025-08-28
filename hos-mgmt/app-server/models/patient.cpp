@@ -72,3 +72,23 @@ void Patient::fromJson(const QJsonObject &json) {
     // 恢复病历历史
     m_medicalHistory.fromJson(json["medicalHistory"].toObject());
 }
+
+// 基础判断患者是否健康
+bool Patient::isHealthy() const {
+    // 优化 分别讨论男女
+    // BMI 健康范围 18.5~24.9
+    double bmi = getWeight() / (height * height);
+    bool bmiHealthy = (bmi >= 18.5 && bmi <= 24.9);
+
+    // 肺活量 > 2000 ml
+    bool lungHealthy = (lungCapacity >= 2000);
+
+    // 心率 60~100 bpm
+    bool heartRateHealthy = (heartRate >= 60 && heartRate <= 100);
+
+    // 血压正常：收缩压 90~120 mmHg，舒张压 60~80 mmHg
+    bool bpHealthy = (systolicBP >= 90 && systolicBP <= 120 &&
+                      diastolicBP >= 60 && diastolicBP <= 80);
+
+    return bmiHealthy && lungHealthy && heartRateHealthy && bpHealthy;
+}
