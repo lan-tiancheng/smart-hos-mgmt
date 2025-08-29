@@ -65,7 +65,8 @@ OBJECTS       = main.o \
 		server.o \
 		moc_user.o \
 		moc_server.o
-DIST          = /opt/Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
+DIST          = ../../../app-server/server.py \
+		/opt/Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/common/linux.conf \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/common/sanitize.conf \

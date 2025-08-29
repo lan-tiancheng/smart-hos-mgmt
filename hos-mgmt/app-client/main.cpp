@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
                          if (!obj && url == objUrl)
                              QCoreApplication::exit(-1);
                      }, Qt::QueuedConnection);
-
+    // 修改main.qml实现页面的交互
     engine.load(url);
 
     return app.exec();

@@ -63,7 +63,8 @@ OBJECTS       = main.o \
 		qrc_client.o \
 		moc_client.o \
 		moc_authmanager.o
-DIST          = ../../../app-client/qml/LoginScreen.qml \
+DIST          = ../../../app-client/qml/HealthInputScreen.qml \
+		../../../app-client/qml/LoginScreen.qml \
 		../../../app-client/qml/Main.qml \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/common/unix.conf \
@@ -675,6 +676,7 @@ compiler_rcc_clean:
 qrc_client.cpp: ../../../app-client/client.qrc \
 		/opt/Qt/5.15.2/gcc_64/bin/rcc \
 		../../../app-client/qml/LoginScreen.qml \
+		../../../app-client/qml/HealthInputScreen.qml \
 		../../../app-client/qml/Main.qml
 	/opt/Qt/5.15.2/gcc_64/bin/rcc -name client ../../../app-client/client.qrc -o qrc_client.cpp
 
@@ -866,18 +868,39 @@ moc_authmanager.cpp: ../../../app-client/src/authmanager.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkAccessManager \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QSharedDataPointer \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QString \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QUrl \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QVariant \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QVector \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QSslConfiguration \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslsocket.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslerror.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qssl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QFlags \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QMetaType \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkReply \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkreply.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QIODevice \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkRequest \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonDocument \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		moc_predefs.h \
 		/opt/Qt/5.15.2/gcc_64/bin/moc
 	/opt/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/lan/smart-hos-mgmt/hos-mgmt/build/Desktop_Qt_5_15_2_GCC_64bit-Debug/app-client/moc_predefs.h -I/opt/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/lan/smart-hos-mgmt/hos-mgmt/app-client -I/opt/Qt/5.15.2/gcc_64/include -I/opt/Qt/5.15.2/gcc_64/include/QtWidgets -I/opt/Qt/5.15.2/gcc_64/include/QtGui -I/opt/Qt/5.15.2/gcc_64/include/QtQml -I/opt/Qt/5.15.2/gcc_64/include/QtNetwork -I/opt/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../../../app-client/src/authmanager.h -o moc_authmanager.cpp
@@ -1005,16 +1028,37 @@ main.o: ../../../app-client/main.cpp /opt/Qt/5.15.2/gcc_64/include/QtGui/QGuiApp
 		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QTcpSocket \
 		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtcpsocket.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qabstractsocket.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkAccessManager \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QSharedDataPointer \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QString \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QUrl \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QVariant \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QVector \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QSslConfiguration \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslsocket.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslerror.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qssl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QFlags \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QMetaType \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkReply \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkreply.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QIODevice \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkRequest \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonDocument \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../../app-client/main.cpp
 
 client.o: ../../../app-client/client.cpp ../../../app-client/client.h \
@@ -1195,15 +1239,38 @@ authmanager.o: ../../../app-client/src/authmanager.cpp ../../../app-client/src/a
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkAccessManager \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkaccessmanager.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkrequest.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QSharedDataPointer \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QString \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QUrl \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QVariant \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QVector \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QSslConfiguration \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslconfiguration.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslsocket.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslerror.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslcertificate.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qssl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QFlags \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QSslPreSharedKeyAuthenticator \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qsslpresharedkeyauthenticator.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QMetaType \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkReply \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/qnetworkreply.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QIODevice \
+		/opt/Qt/5.15.2/gcc_64/include/QtNetwork/QNetworkRequest \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonDocument \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \

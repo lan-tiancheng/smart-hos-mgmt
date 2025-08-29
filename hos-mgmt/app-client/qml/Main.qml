@@ -13,7 +13,6 @@ ApplicationWindow {
     StackLayout {
         id: screenStack
         anchors.fill: parent
-
         // 登录界面
         LoginScreen {
             Layout.fillWidth: true

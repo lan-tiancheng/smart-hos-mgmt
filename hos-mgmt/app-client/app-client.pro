@@ -31,5 +31,6 @@ RESOURCES += \
     client.qrc
 
 DISTFILES += \
+    qml/HealthInputScreen.qml \
     qml/LoginScreen.qml \
     qml/Main.qml
