@@ -1,66 +1,55 @@
-#include "src/authmanager.h"
-#include <QJsonObject>
+#include "authmanager.h"
 #include <QJsonDocument>
-#include <QNetworkRequest>
 #include <QUrl>
 #include <QDebug>
-#include <QHostAddress>
+#include <QNetworkRequest>
+#include <QTimer>
 
-// 假设 authmanager.h 中有：
-// QTcpSocket m_socket;
-// QNetworkAccessManager m_nam;
-// QString m_apiBase = "http://127.0.0.1:8080";
-// bool m_isAuthenticated = false;
-// int m_userId = 0;
-// int m_remainingAttempts = 5;
+// ------------------------- 构造函数 -------------------------
 
 AuthManager::AuthManager(QObject *parent)
-    : QObject(parent),
-    m_apiBase(QStringLiteral("http://127.0.0.1:8080")),
-    m_isAuthenticated(false),
-    m_userId(0),
-    m_remainingAttempts(5)
+    : QObject(parent)
 {
-    // TCP socket 连接（可选，保留以兼容原先 TCP 实现）
     connect(&m_socket, &QTcpSocket::readyRead, this, &AuthManager::onReadyRead);
     connect(&m_socket, &QTcpSocket::connected, this, &AuthManager::onConnected);
-    connect(&m_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+    connect(&m_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred),
             this, &AuthManager::onErrorOccurred);
-
-    // HTTP: QNetworkAccessManager 不需要额外连接（使用 lambda 回调）
-    // 你可以选择注释掉下面这行，如果不想默认建立 TCP 连接：
-    // m_socket.connectToHost(QHostAddress("127.0.0.1"), 8080);
 }
 
-// ------------------------- TCP-style requests (older) -------------------------
+// ------------------------- 配置 -------------------------
 
-// 如果你头文件声明了使用 UserType 的接口，保留并实现（优先走 TCP，如果未连接则回退到 HTTP）。
+void AuthManager::setApiBase(const QString &url)
+{
+    m_apiBase = url;
+    qDebug() << "AuthManager: API base set to" << m_apiBase;
+}
+
+// ------------------------- TCP 请求（内部） -------------------------
+
 void AuthManager::requestLogin(UserType userType, const QString &username, const QString &password)
 {
+    if (m_socket.state() != QAbstractSocket::ConnectedState) {
+        emit loginFailed("无法连接到服务器。");
+        return;
+    }
+
     QJsonObject request;
     request["type"] = "login";
     request["userType"] = (userType == Patient) ? "patient" : "doctor";
     request["username"] = username;
     request["password"] = password;
 
-    QJsonDocument doc(request);
-    QByteArray payload = doc.toJson(QJsonDocument::Compact);
-
-    if (m_socket.state() == QAbstractSocket::ConnectedState) {
-        m_socket.write(payload);
-        m_socket.flush();
-        qDebug() << "AuthManager: sent login over TCP";
-    } else {
-        // TCP 未连接：退回到 HTTP POST
-        qDebug() << "AuthManager: TCP not connected, using HTTP fallback for login";
-        // reuse HTTP variant; convert userType to string
-        requestLogin(username, password); // This will call the HTTP string-based login
-    }
+    sendTcpJson(request);
 }
 
 void AuthManager::requestRegister(UserType userType, const QString &username, const QString &password,
                                   const QString &phone, const QString &address, int age, const QString &gender)
 {
+    if (m_socket.state() != QAbstractSocket::ConnectedState) {
+        emit registerFailed("无法连接到服务器。");
+        return;
+    }
+
     QJsonObject request;
     request["type"] = "register";
     request["userType"] = (userType == Patient) ? "patient" : "doctor";
@@ -71,106 +60,50 @@ void AuthManager::requestRegister(UserType userType, const QString &username, co
     request["age"] = age;
     request["gender"] = gender;
 
-    QJsonDocument doc(request);
-    QByteArray payload = doc.toJson(QJsonDocument::Compact);
-
-    if (m_socket.state() == QAbstractSocket::ConnectedState) {
-        m_socket.write(payload);
-        m_socket.flush();
-        qDebug() << "AuthManager: sent register over TCP";
-    } else {
-        qDebug() << "AuthManager: TCP not connected, using HTTP fallback for register";
-        // call HTTP-string variant
-        requestRegister((userType == Patient) ? QStringLiteral("patient") : QStringLiteral("doctor"),
-                        username, password, phone, address, age, gender);
-    }
+    sendTcpJson(request);
 }
 
-// ------------------------- HTTP-style requests (QNetworkAccessManager) -------------------------
+// ------------------------- HTTP 请求（暴露给 QML） -------------------------
 
-// requestRegister with string userType (HTTP)
+void AuthManager::requestLogin(const QString &username, const QString &password)
+{
+    if (m_apiBase.isEmpty()) {
+        qWarning() << "AuthManager: API base URL is not set!";
+        emit loginFailed("客户端错误：API 基础地址未设置");
+        return;
+    }
+
+    QJsonObject obj;
+    obj["type"] = "login";
+    obj["username"] = username;
+    obj["password"] = password;
+
+    qDebug() << "POST" << (m_apiBase + "/login") << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    postHttpJson("/login", obj, [this](QNetworkReply *reply) { onHttpLoginFinished(reply); }, 15000);
+}
+
 void AuthManager::requestRegister(const QString &userType, const QString &username, const QString &password,
                                   const QString &phone, const QString &address, int age, const QString &gender)
 {
+    if (m_apiBase.isEmpty()) {
+        qWarning() << "AuthManager: API base URL is not set!";
+        emit registerFailed("客户端错误：API 基础地址未设置");
+        return;
+    }
+
     QJsonObject obj;
-    obj["username"] = username;
-    obj["password"] = password;
+    obj["type"] = "register";
     obj["userType"] = userType;
-    obj["phone"]    = phone;
-    obj["address"]  = address;
-    obj["age"]      = age;
-    obj["gender"]   = gender;
-
-    QJsonDocument doc(obj);
-    QNetworkRequest req(QUrl(m_apiBase + "/api/auth/register"));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = m_nam.post(req, doc.toJson());
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        reply->deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << "register network error:" << reply->errorString();
-            emit registerFailed(reply->errorString());
-            return;
-        }
-        QByteArray data = reply->readAll();
-        QJsonDocument d = QJsonDocument::fromJson(data);
-        if (!d.isObject()) {
-            emit registerFailed("响应格式错误");
-            return;
-        }
-        QJsonObject o = d.object();
-        if (o.value("success").toBool()) {
-            emit registerSuccess();
-        } else {
-            emit registerFailed(o.value("reason").toString("注册失败"));
-        }
-    });
-}
-
-// requestLogin string-based (HTTP)
-void AuthManager::requestLogin(const QString &username, const QString &password)
-{
-    QJsonObject obj;
     obj["username"] = username;
     obj["password"] = password;
+    obj["phone"] = phone;
+    obj["address"] = address;
+    obj["age"] = age;
+    obj["gender"] = gender;
 
-    QJsonDocument doc(obj);
-    QNetworkRequest req(QUrl(m_apiBase + "/api/auth/login"));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = m_nam.post(req, doc.toJson());
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        reply->deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << "login network error:" << reply->errorString();
-            emit loginFailed(reply->errorString());
-            return;
-        }
-        QByteArray data = reply->readAll();
-        QJsonDocument d = QJsonDocument::fromJson(data);
-        if (!d.isObject()) {
-            emit loginFailed("响应格式错误");
-            return;
-        }
-        QJsonObject o = d.object();
-        if (!o.value("success").toBool()) {
-            emit loginFailed(o.value("reason").toString("登录失败"));
-            return;
-        }
-        // 登录成功 (HTTP)
-        m_isAuthenticated = true;
-        emit isAuthenticatedChanged();
-        m_userId = o.value("userId").toInt();
-        QString userType = o.value("userType").toString();
-        // emit both forms if available
-        emit loginSuccess(m_userId, userType);
-        if (userType == QStringLiteral("patient"))
-            emit loginSuccess(Patient);
-        else if (userType == QStringLiteral("doctor"))
-            emit loginSuccess(Doctor);
-    });
+    qDebug() << "POST" << (m_apiBase + "/register") << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    postHttpJson("/register", obj, [this](QNetworkReply *reply) { onHttpRegisterFinished(reply); }, 15000);
 }
-
-// ------------------------- Health submit (HTTP) -------------------------
 
 void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl, const QString &bp)
 {
@@ -178,44 +111,77 @@ void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl,
         emit healthSubmitFailed("未登录或 userId 无效");
         return;
     }
+    if (m_apiBase.isEmpty()) {
+        qWarning() << "AuthManager: API base URL is not set!";
+        emit healthSubmitFailed("客户端错误：API 基础地址未设置");
+        return;
+    }
+
     QJsonObject obj;
+    obj["type"] = "health_submit";
     obj["userId"] = m_userId;
     obj["height"] = heightCm;
     obj["weight"] = weightKg;
-    obj["lung"]   = lungMl;
-    obj["bp"]     = bp;
+    obj["lung"] = lungMl;
+    obj["bp"] = bp;
 
+    qDebug() << "POST" << (m_apiBase + "/health") << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    postHttpJson("/health", obj, [this](QNetworkReply *reply) { onHttpHealthSubmitFinished(reply); }, 15000);
+}
+
+// ------------------------- TCP/HTTP 公共函数 -------------------------
+
+void AuthManager::sendTcpJson(const QJsonObject &obj)
+{
     QJsonDocument doc(obj);
-    QNetworkRequest req(QUrl(m_apiBase + "/api/health/submit"));
+    QByteArray data = doc.toJson(QJsonDocument::Compact) + "\n";
+    m_socket.write(data);
+    m_socket.flush();
+}
+
+void AuthManager::postHttpJson(const QString &path,
+                               const QJsonObject &obj,
+                               std::function<void(QNetworkReply*)> callback,
+                               int timeoutMs)
+{
+    if (m_apiBase.isEmpty()) {
+        qWarning() << "AuthManager: API base URL is not set!";
+        return;
+    }
+
+    QNetworkRequest req{ QUrl(m_apiBase + path) };
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = m_nam.post(req, doc.toJson());
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        reply->deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << "health submit error:" << reply->errorString();
-            emit healthSubmitFailed(reply->errorString());
-            return;
+
+    QNetworkReply *reply = m_nam.post(req, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+
+    // 标注请求信息，方便日志和超时判断
+    reply->setProperty("requestPath", path);
+    reply->setProperty("timedOut", false);
+
+    // 打印网络错误
+    connect(reply, &QNetworkReply::errorOccurred, this, [reply](QNetworkReply::NetworkError code){
+        Q_UNUSED(code);
+        qWarning() << "HTTP error on" << reply->property("requestPath").toString() << ":" << reply->errorString();
+    });
+
+    // 超时控制：超时则 abort，finished 会照常触发
+    auto timer = new QTimer(reply);
+    timer->setSingleShot(true);
+    timer->start(timeoutMs > 0 ? timeoutMs : 15000);
+    connect(timer, &QTimer::timeout, reply, [this, reply]() {
+        if (reply->isRunning()) {
+            reply->setProperty("timedOut", true);
+            qWarning() << "HTTP request timed out:" << reply->property("requestPath").toString();
+            reply->abort(); // 将触发 finished -> handleHttpReply -> 发出失败信号
         }
-        QByteArray data = reply->readAll();
-        QJsonDocument d = QJsonDocument::fromJson(data);
-        if (!d.isObject()) {
-            emit healthSubmitFailed("响应格式解析错误");
-            return;
-        }
-        QJsonObject o = d.object();
-        if (!o.value("success").toBool()) {
-            emit healthSubmitFailed(o.value("reason").toString("提交失败"));
-            return;
-        }
-        double bmi = o.value("bmi").toDouble();
-        QString lungLevel = o.value("lungLevel").toString();
-        QString bpLevel = o.value("bpLevel").toString();
-        QString overall = o.value("overall").toString();
-        emit healthSubmitSuccess(bmi, lungLevel, bpLevel, overall);
+    });
+
+    connect(reply, &QNetworkReply::finished, this, [reply, callback]() {
+        callback(reply);
     });
 }
 
-// ------------------------- TCP socket helpers -------------------------
+// ------------------------- TCP 槽函数 -------------------------
 
 void AuthManager::onConnected()
 {
@@ -226,78 +192,131 @@ void AuthManager::onErrorOccurred(QAbstractSocket::SocketError socketError)
 {
     Q_UNUSED(socketError);
     qDebug() << "Socket error:" << m_socket.errorString();
-    emit loginFailed("无法连接到服务器");
+    emit loginFailed("TCP 连接失败：" + m_socket.errorString());
 }
 
 void AuthManager::onReadyRead()
 {
-    QByteArray data = m_socket.readAll();
-    // TCP 回来的 JSON 我们直接解析并复用 processResponseObject
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    if (doc.isNull() || !doc.isObject()) {
-        emit loginFailed("服务器响应格式错误");
+    m_pendingBuffer.append(m_socket.readAll());
+
+    while (true) {
+        int idx = m_pendingBuffer.indexOf('\n');
+        if (idx == -1) break;
+
+        QByteArray jsonData = m_pendingBuffer.left(idx);
+        m_pendingBuffer.remove(0, idx + 1);
+
+        QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+        if (doc.isObject()) {
+            QJsonObject obj = doc.object();
+            QString type = obj.value("type").toString();
+
+            if (type == "login") {
+                processLoginResponse(obj);
+            } else if (type == "register") {
+                processRegisterResponse(obj);
+            } else if (type == "health_submit") {
+                processHealthSubmitResponse(obj);
+            }
+        }
+    }
+}
+
+// ------------------------- HTTP 槽函数 -------------------------
+
+void AuthManager::onHttpLoginFinished(QNetworkReply* reply)
+{
+    handleHttpReply(reply, [this](const QJsonObject &obj) { processLoginResponse(obj); },
+                    [this](const QString &err) { emit loginFailed(err); });
+}
+
+void AuthManager::onHttpRegisterFinished(QNetworkReply* reply)
+{
+    handleHttpReply(reply, [this](const QJsonObject &obj) { processRegisterResponse(obj); },
+                    [this](const QString &err) { emit registerFailed(err); });
+}
+
+void AuthManager::onHttpHealthSubmitFinished(QNetworkReply* reply)
+{
+    handleHttpReply(reply, [this](const QJsonObject &obj) { processHealthSubmitResponse(obj); },
+                    [this](const QString &err) { emit healthSubmitFailed(err); });
+}
+
+void AuthManager::handleHttpReply(QNetworkReply* reply,
+                                  std::function<void(const QJsonObject&)> onSuccess,
+                                  std::function<void(const QString&)> onError)
+{
+    if (reply->error() != QNetworkReply::NoError) {
+        if (reply->property("timedOut").toBool()) {
+            onError(QStringLiteral("请求超时，请检查网络或服务器是否运行"));
+        } else {
+            onError(reply->errorString());
+        }
+        reply->deleteLater();
         return;
     }
-    QJsonObject resp = doc.object();
-    processResponseObject(resp);
+
+    QByteArray data = reply->readAll();
+    QJsonDocument d = QJsonDocument::fromJson(data);
+    if (!d.isObject()) {
+        onError("响应格式错误。");
+    } else {
+        onSuccess(d.object());
+    }
+    reply->deleteLater();
 }
 
-// 统一处理来自 TCP/HTTP 的响应 JSON 对象
-void AuthManager::processResponseObject(const QJsonObject &resp)
+// ------------------------- 响应处理 -------------------------
+
+void AuthManager::processLoginResponse(const QJsonObject &resp)
 {
-    QString type = resp.value("type").toString();
     bool success = resp.value("success").toBool();
-    QString reason = resp.value("reason").toString();
+    if (success) {
+        m_isAuthenticated = true;
+        emit isAuthenticatedChanged();
+        m_userId = resp.value("userId").toInt();
+        emit currentUserIdChanged();
+        QString userTypeStr = resp.value("userType").toString();
+        UserType userType = (userTypeStr == "patient") ? Patient : Doctor;
 
-    if (type == "login") {
-        if (success) {
-            // 如果服务端返回 userId/userType，优先使用
-            m_isAuthenticated = true;
-            emit isAuthenticatedChanged();
-
-            if (resp.contains("userId"))
-                m_userId = resp.value("userId").toInt();
-
-            QString userTypeStr = resp.value("userType").toString();
-            if (!userTypeStr.isEmpty()) {
-                emit loginSuccess(m_userId, userTypeStr);
-                if (userTypeStr == "patient")
-                    emit loginSuccess(Patient);
-                else if (userTypeStr == "doctor")
-                    emit loginSuccess(Doctor);
-            } else {
-                // 如果 server 没返回字符串型 userType，尝试从 boolean/其它字段推断（兼容旧协议）
-                bool isPatient = (resp.value("userType").toString() == "patient");
-                emit loginSuccess(isPatient ? Patient : Doctor);
-            }
-        } else {
-            // 失败：可能返回 remainingAttempts
-            int rem = resp.value("remainingAttempts").toInt(m_remainingAttempts);
-            setRemainingAttempts(rem);
-            emit loginFailed(reason);
-        }
-    } else if (type == "register") {
-        if (success) {
-            emit registerSuccess();
-        } else {
-            emit registerFailed(reason);
-        }
-    } else if (type == "health_submit") {
-        if (success) {
-            double bmi = resp.value("bmi").toDouble();
-            QString lungLevel = resp.value("lungLevel").toString();
-            QString bpLevel = resp.value("bpLevel").toString();
-            QString overall = resp.value("overall").toString();
-            emit healthSubmitSuccess(bmi, lungLevel, bpLevel, overall);
-        } else {
-            emit healthSubmitFailed(reason);
-        }
+        emit loginSuccess(m_userId, userType);
     } else {
-        qDebug() << "Unknown response type:" << type;
+        int rem = resp.value("remainingAttempts").toInt(m_remainingAttempts);
+        setRemainingAttempts(rem);
+        emit loginFailed(resp.value("reason").toString("登录失败"));
     }
 }
 
-// ------------------------- utility -------------------------
+void AuthManager::processRegisterResponse(const QJsonObject &resp)
+{
+    bool success = resp.value("success").toBool();
+    if (success) {
+        emit registerSuccess();
+    } else {
+        emit registerFailed(resp.value("reason").toString("注册失败"));
+    }
+}
+
+void AuthManager::processHealthSubmitResponse(const QJsonObject &resp)
+{
+    bool success = resp.value("success").toBool();
+    if (success) {
+        emit healthSubmitSuccess(
+            resp.value("bmi").toDouble(),
+            resp.value("lungLevel").toString(),
+            resp.value("bpLevel").toString(),
+            resp.value("overall").toString()
+            );
+    } else {
+        emit healthSubmitFailed(resp.value("reason").toString("提交失败"));
+    }
+}
+
+// ------------------------- getter/setter -------------------------
+
+bool AuthManager::isAuthenticated() const { return m_isAuthenticated; }
+int AuthManager::remainingAttempts() const { return m_remainingAttempts; }
+int AuthManager::currentUserId() const { return m_userId; }
 
 void AuthManager::setRemainingAttempts(int attempts)
 {

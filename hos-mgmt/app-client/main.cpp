@@ -7,25 +7,21 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    // 注册 QML 类型（供 QML 创建 AuthManager 对象或访问枚举）
-    qmlRegisterType<AuthManager>("com.mycompany.app", 1, 0, "AuthManager");
-    qmlRegisterUncreatableType<AuthManager>("com.mycompany.app", 1, 0, "AuthManagerEnums", "Enums only");
+    // 创建 AuthManager 后端实例
+    AuthManager authManager;
+    authManager.setApiBase("http://127.0.0.1:8080"); // 修改为你的服务器地址
 
     QQmlApplicationEngine engine;
+    qmlRegisterType<AuthManager>("com.mycompany.app", 1, 0, "AuthManager");
 
-    // 创建 AuthManager 实例，并暴露给 QML
-    AuthManager authManager;
+    // 将已有实例暴露给 QML
     engine.rootContext()->setContextProperty("authManager", &authManager);
 
-    // 加载主 QML
-    const QUrl url(QStringLiteral("qrc:/client/qml/qml/Main.qml"));
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-                         if (!obj && url == objUrl)
-                             QCoreApplication::exit(-1);
-                     }, Qt::QueuedConnection);
-    // 修改main.qml实现页面的交互
-    engine.load(url);
+    // 加载 QML
+    engine.load(QUrl(QStringLiteral("qrc:/client/qml/qml/Main.qml"))); // 修改为资源路径
+
+    if (engine.rootObjects().isEmpty())
+        return -1;
 
     return app.exec();
 }

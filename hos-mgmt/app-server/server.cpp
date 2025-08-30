@@ -1,14 +1,29 @@
 #include "server.h"
-#include "ui_server.h"
+#include "qtcpsocket.h"
+#include <QDebug>
 
-server::server(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::server)
+Server::Server(QObject *parent)
+    : QObject(parent)
 {
-    ui->setupUi(this);
+    m_tcpServer = new QTcpServer(this);
+    // 连接 newConnection 信号到 newConnection 槽
+    connect(m_tcpServer, &QTcpServer::newConnection,
+            this, &Server::newConnection);
 }
 
-server::~server()
+void Server::startServer()
 {
-    delete ui;
+    if (!m_tcpServer->listen(QHostAddress::Any, 8080)) {
+        qDebug() << "Server could not start! Error:" << m_tcpServer->errorString();
+    } else {
+        qDebug() << "Server started! Listening on port 8080...";
+    }
+}
+
+void Server::newConnection()
+{
+    QTcpSocket *clientSocket = m_tcpServer->nextPendingConnection();
+    qDebug() << "New client connected from:" << clientSocket->peerAddress().toString();
+
+    // TODO: 在这里处理客户端请求
 }

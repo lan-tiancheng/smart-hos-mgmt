@@ -1,14 +1,11 @@
 #include "client.h"
-#include "ui_client.h"
 
-client::client(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::client)
+client::client(QObject *parent)
+    : QObject(parent)
 {
-    ui->setupUi(this);
+    // 可以在这里做初始化
 }
 
 client::~client()
 {
-    delete ui;
 }

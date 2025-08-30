@@ -1,57 +1,116 @@
 #include "databasemanager.h"
+#include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QMap>
+#include <map>
 
-#include <QSqlQuery>
-// 统一使用小写命名规范
-// 数据库构造函数
-DatabaseManager::DatabaseManager()
+DatabaseManager::DatabaseManager(QObject *parent)
+    : QObject(parent)
 {
-    m_mysqlDb = QSqlDatabase::addDatabase("QMYSQL");
-    m_mysqlDb.setHostName("localhost"); // 你的数据库主机名
-    m_mysqlDb.setDatabaseName("smartmedicaldb"); // 你的数据库名称
-    m_mysqlDb.setUserName("root"); // 你的用户名
-    m_mysqlDb.setPassword("1234"); // 你的密码
-
-    if (!m_mysqlDb.open()) {
-        qDebug() << "Database connection failed:" << m_mysqlDb.lastError().text();
-    } else {
-        qDebug() << "Database connection successful.";
+    try {
+        // 连接到本地的 Redis 服务器，默认端口为 6379
+        m_redis = std::make_shared<sw::redis::Redis>("tcp://127.0.0.1:6379");
+        qDebug() << "Redis connection successful.";
+    } catch (const sw::redis::Error &e) {
+        qDebug() << "Redis connection failed:" << e.what();
     }
 }
 
-// 管理appiontment类
-// ...
 bool DatabaseManager::createAppointment(const Appointment &appointment)
 {
-    QSqlQuery query(m_mysqlDb);
-    query.prepare("INSERT INTO appointments (id, patient_id, doctor_id, appointment_date_time, status) "
-                  "VALUES (:id, :patient_id, :doctor_id, :appointment_date_time, :status)");
-    query.bindValue(":id", appointment.id());
-    query.bindValue(":patient_id", appointment.patientId());
-    query.bindValue(":doctor_id", appointment.doctorId());
-    query.bindValue(":appointment_date_time", appointment.appointmentDateTime());
-    query.bindValue(":status", appointment.status());
-    return query.exec();
+    // 在调用 m_redis 方法前，检查指针是否有效
+    if (!m_redis) {
+        qDebug() << "Redis client is not initialized.";
+        return false;
+    }
+
+    const std::string appointmentKey = "appointment:" + appointment.id().toStdString();
+
+    // 显式创建 std::map 对象来解决类型推断问题
+    std::map<std::string, std::string> fields;
+    fields["patient_id"] = appointment.patientId().toStdString();
+    fields["doctor_id"] = appointment.doctorId().toStdString();
+    fields["date_time"] = appointment.appointmentDateTime().toString(Qt::ISODate).toStdString();
+    fields["status"] = QString::number(appointment.status()).toStdString();
+
+    m_redis->hset(appointmentKey, fields.begin(), fields.end());
+
+    // 使用 Redis 列表记录患者和医生的预约ID
+    m_redis->lpush("patient:" + appointment.patientId().toStdString() + ":appointments", appointment.id().toStdString());
+    m_redis->lpush("doctor:" + appointment.doctorId().toStdString() + ":appointments", appointment.id().toStdString());
+
+    return true;
 }
 
 QList<Appointment> DatabaseManager::getAppointmentsByPatientId(const QString &patientId)
 {
     QList<Appointment> appointments;
-    QSqlQuery query(m_mysqlDb);
-    query.prepare("SELECT * FROM appointments WHERE patient_id = :patient_id");
-    query.bindValue(":patient_id", patientId);
+    if (!m_redis) {
+        qDebug() << "Redis client is not initialized.";
+        return appointments;
+    }
 
-    if (query.exec()) {
-        while (query.next()) {
+    std::string patientAppointmentsKey = "patient:" + patientId.toStdString() + ":appointments";
+    std::vector<std::string> appointmentIds;
+    m_redis->lrange(patientAppointmentsKey, 0, -1, std::back_inserter(appointmentIds));
+
+    for (const auto &id : appointmentIds) {
+        std::map<std::string, std::string> fields;
+        m_redis->hgetall("appointment:" + id, std::inserter(fields, fields.begin()));
+
+        if (!fields.empty()) {
             Appointment app;
-            app.setId(query.value("id").toString());
-            app.setPatientId(query.value("patient_id").toString());
-            app.setDoctorId(query.value("doctor_id").toString());
-            app.setAppointmentDateTime(query.value("appointment_date_time").toDateTime());
-            app.setStatus((Appointment::AppointmentStatus)query.value("status").toInt());
+            app.setId(QString::fromStdString(id));
+            app.setPatientId(QString::fromStdString(fields["patient_id"]));
+            app.setDoctorId(QString::fromStdString(fields["doctor_id"]));
+            app.setAppointmentDateTime(QDateTime::fromString(QString::fromStdString(fields["date_time"]), Qt::ISODate));
+            app.setStatus((Appointment::AppointmentStatus)QString::fromStdString(fields["status"]).toInt());
             appointments.append(app);
         }
     }
     return appointments;
 }
 
-// TODO: 实现 getAppointmentsByDoctorId 和 updateAppointmentStatus 方法
+QList<Appointment> DatabaseManager::getAppointmentsByDoctorId(const QString &doctorId)
+{
+    QList<Appointment> appointments;
+    if (!m_redis) {
+        qDebug() << "Redis client is not initialized.";
+        return appointments;
+    }
+
+    std::string doctorAppointmentsKey = "doctor:" + doctorId.toStdString() + ":appointments";
+    std::vector<std::string> appointmentIds;
+    m_redis->lrange(doctorAppointmentsKey, 0, -1, std::back_inserter(appointmentIds));
+
+    for (const auto &id : appointmentIds) {
+        std::map<std::string, std::string> fields;
+        m_redis->hgetall("appointment:" + id, std::inserter(fields, fields.begin()));
+
+        if (!fields.empty()) {
+            Appointment app;
+            app.setId(QString::fromStdString(id));
+            app.setPatientId(QString::fromStdString(fields["patient_id"]));
+            app.setDoctorId(QString::fromStdString(fields["doctor_id"]));
+            app.setAppointmentDateTime(QDateTime::fromString(QString::fromStdString(fields["date_time"]), Qt::ISODate));
+            app.setStatus((Appointment::AppointmentStatus)QString::fromStdString(fields["status"]).toInt());
+            appointments.append(app);
+        }
+    }
+    return appointments;
+}
+
+bool DatabaseManager::updateAppointmentStatus(const QString &appointmentId, Appointment::AppointmentStatus newStatus)
+{
+    if (!m_redis) {
+        qDebug() << "Redis client is not initialized.";
+        return false;
+    }
+
+    std::string appointmentKey = "appointment:" + appointmentId.toStdString();
+
+    m_redis->hset(appointmentKey, "status", QString::number(newStatus).toStdString());
+
+    return true;
+}

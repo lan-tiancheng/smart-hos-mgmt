@@ -1,23 +1,14 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <QWidget>
+#include <QObject>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class client;
-}
-QT_END_NAMESPACE
-
-class client : public QWidget
+class client : public QObject
 {
     Q_OBJECT
-
 public:
-    client(QWidget *parent = nullptr);
+    explicit client(QObject *parent = nullptr);
     ~client();
-
-private:
-    Ui::client *ui;
 };
+
 #endif // CLIENT_H

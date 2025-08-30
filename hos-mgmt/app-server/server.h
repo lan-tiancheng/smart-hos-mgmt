@@ -1,23 +1,21 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <QWidget>
+#include <QObject>
+#include <QTcpServer>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class server;
-}
-QT_END_NAMESPACE
-
-class server : public QWidget
+class Server : public QObject
 {
     Q_OBJECT
-
 public:
-    server(QWidget *parent = nullptr);
-    ~server();
+    explicit Server(QObject *parent = nullptr);
+    void startServer();
+
+private slots:
+    void newConnection();
 
 private:
-    Ui::server *ui;
+    QTcpServer *m_tcpServer;
 };
+
 #endif // SERVER_H
