@@ -16,10 +16,71 @@ Item {
 
         Label { text: "健康数据录入"; font.pixelSize: 22; Layout.alignment: Qt.AlignHCenter }
 
-        TextField { id: heightField; placeholderText: "身高 (cm)"; validator: DoubleValidator { bottom: 50; top: 250 } Layout.fillWidth: true }
-        TextField { id: weightField; placeholderText: "体重 (kg)"; validator: DoubleValidator { bottom: 10; top: 400 } Layout.fillWidth: true }
-        TextField { id: lungField; placeholderText: "肺活量 (ml)"; validator: IntValidator { bottom: 100; top: 20000 } Layout.fillWidth: true }
-        TextField { id: bpField; placeholderText: "血压 (mmHg)，例 120/80"; Layout.fillWidth: true }
+        RowLayout {
+            Layout.fillWidth: true
+            TextField {
+                id: heightField
+                placeholderText: "身高 (cm)"
+                validator: DoubleValidator { bottom: 50; top: 250 }
+                Layout.fillWidth: true
+            }
+            VoiceInputButton {
+                onRecognized: function(text) {
+                    var n = parseFloat(text.replace(/[^\d.]/g, ""))
+                    if (!isNaN(n)) heightField.text = Math.round(n * 10) / 10
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            TextField {
+                id: weightField
+                placeholderText: "体重 (kg)"
+                validator: DoubleValidator { bottom: 10; top: 400 }
+                Layout.fillWidth: true
+            }
+            VoiceInputButton {
+                onRecognized: function(text) {
+                    var n = parseFloat(text.replace(/[^\d.]/g, ""))
+                    if (!isNaN(n)) weightField.text = Math.round(n * 10) / 10
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            TextField {
+                id: lungField
+                placeholderText: "肺活量 (ml)"
+                validator: IntValidator { bottom: 100; top: 20000 }
+                Layout.fillWidth: true
+            }
+            VoiceInputButton {
+                onRecognized: function(text) {
+                    var n = parseInt(text.replace(/[^\d]/g, ""))
+                    if (!isNaN(n)) lungField.text = n
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            TextField {
+                id: bpField
+                placeholderText: "血压 (mmHg)，例 120/80"
+                Layout.fillWidth: true
+            }
+            VoiceInputButton {
+                onRecognized: function(text) {
+                    // 尝试从语音提取 “收缩压/舒张压”
+                    var nums = text.match(/\d{2,3}/g)
+                    if (nums && nums.length >= 2) {
+                        bpField.text = nums[0] + "/" + nums[1]
+                    }
+                }
+            }
+        }
 
         Label { id: resultLabel; text: ""; wrapMode: Text.WordWrap; Layout.fillWidth: true }
 

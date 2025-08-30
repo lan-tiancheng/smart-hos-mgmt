@@ -1,6 +1,7 @@
 #ifndef USER_H
 #define USER_H
 
+#include <QObject>       // 为 Q_GADGET / Q_ENUM 提供宏定义
 #include <QString>
 #include <QJsonObject>
 #include <QJsonArray>

@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_AuthManager_t {
-    QByteArrayData data[52];
-    char stringdata0[658];
+    QByteArrayData data[54];
+    char stringdata0[697];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -51,39 +51,41 @@ QT_MOC_LITERAL(15, 164, 18), // "healthSubmitFailed"
 QT_MOC_LITERAL(16, 183, 22), // "isAuthenticatedChanged"
 QT_MOC_LITERAL(17, 206, 24), // "remainingAttemptsChanged"
 QT_MOC_LITERAL(18, 231, 20), // "currentUserIdChanged"
-QT_MOC_LITERAL(19, 252, 11), // "onConnected"
-QT_MOC_LITERAL(20, 264, 15), // "onErrorOccurred"
-QT_MOC_LITERAL(21, 280, 28), // "QAbstractSocket::SocketError"
-QT_MOC_LITERAL(22, 309, 11), // "socketError"
-QT_MOC_LITERAL(23, 321, 11), // "onReadyRead"
-QT_MOC_LITERAL(24, 333, 19), // "onHttpLoginFinished"
-QT_MOC_LITERAL(25, 353, 14), // "QNetworkReply*"
-QT_MOC_LITERAL(26, 368, 5), // "reply"
-QT_MOC_LITERAL(27, 374, 22), // "onHttpRegisterFinished"
-QT_MOC_LITERAL(28, 397, 26), // "onHttpHealthSubmitFinished"
-QT_MOC_LITERAL(29, 424, 10), // "setApiBase"
-QT_MOC_LITERAL(30, 435, 3), // "url"
-QT_MOC_LITERAL(31, 439, 12), // "requestLogin"
-QT_MOC_LITERAL(32, 452, 8), // "username"
-QT_MOC_LITERAL(33, 461, 8), // "password"
-QT_MOC_LITERAL(34, 470, 15), // "requestRegister"
-QT_MOC_LITERAL(35, 486, 5), // "phone"
-QT_MOC_LITERAL(36, 492, 7), // "address"
-QT_MOC_LITERAL(37, 500, 3), // "age"
-QT_MOC_LITERAL(38, 504, 6), // "gender"
-QT_MOC_LITERAL(39, 511, 16), // "submitHealthData"
-QT_MOC_LITERAL(40, 528, 8), // "heightCm"
-QT_MOC_LITERAL(41, 537, 8), // "weightKg"
-QT_MOC_LITERAL(42, 546, 6), // "lungMl"
-QT_MOC_LITERAL(43, 553, 2), // "bp"
-QT_MOC_LITERAL(44, 556, 20), // "setRemainingAttempts"
-QT_MOC_LITERAL(45, 577, 8), // "attempts"
-QT_MOC_LITERAL(46, 586, 15), // "isAuthenticated"
-QT_MOC_LITERAL(47, 602, 17), // "remainingAttempts"
-QT_MOC_LITERAL(48, 620, 13), // "currentUserId"
-QT_MOC_LITERAL(49, 634, 8), // "UserType"
-QT_MOC_LITERAL(50, 643, 7), // "Patient"
-QT_MOC_LITERAL(51, 651, 6) // "Doctor"
+QT_MOC_LITERAL(19, 252, 22), // "currentUserTypeChanged"
+QT_MOC_LITERAL(20, 275, 11), // "onConnected"
+QT_MOC_LITERAL(21, 287, 15), // "onErrorOccurred"
+QT_MOC_LITERAL(22, 303, 28), // "QAbstractSocket::SocketError"
+QT_MOC_LITERAL(23, 332, 11), // "socketError"
+QT_MOC_LITERAL(24, 344, 11), // "onReadyRead"
+QT_MOC_LITERAL(25, 356, 19), // "onHttpLoginFinished"
+QT_MOC_LITERAL(26, 376, 14), // "QNetworkReply*"
+QT_MOC_LITERAL(27, 391, 5), // "reply"
+QT_MOC_LITERAL(28, 397, 22), // "onHttpRegisterFinished"
+QT_MOC_LITERAL(29, 420, 26), // "onHttpHealthSubmitFinished"
+QT_MOC_LITERAL(30, 447, 10), // "setApiBase"
+QT_MOC_LITERAL(31, 458, 3), // "url"
+QT_MOC_LITERAL(32, 462, 12), // "requestLogin"
+QT_MOC_LITERAL(33, 475, 8), // "username"
+QT_MOC_LITERAL(34, 484, 8), // "password"
+QT_MOC_LITERAL(35, 493, 15), // "requestRegister"
+QT_MOC_LITERAL(36, 509, 5), // "phone"
+QT_MOC_LITERAL(37, 515, 7), // "address"
+QT_MOC_LITERAL(38, 523, 3), // "age"
+QT_MOC_LITERAL(39, 527, 6), // "gender"
+QT_MOC_LITERAL(40, 534, 16), // "submitHealthData"
+QT_MOC_LITERAL(41, 551, 8), // "heightCm"
+QT_MOC_LITERAL(42, 560, 8), // "weightKg"
+QT_MOC_LITERAL(43, 569, 6), // "lungMl"
+QT_MOC_LITERAL(44, 576, 2), // "bp"
+QT_MOC_LITERAL(45, 579, 20), // "setRemainingAttempts"
+QT_MOC_LITERAL(46, 600, 8), // "attempts"
+QT_MOC_LITERAL(47, 609, 15), // "isAuthenticated"
+QT_MOC_LITERAL(48, 625, 17), // "remainingAttempts"
+QT_MOC_LITERAL(49, 643, 13), // "currentUserId"
+QT_MOC_LITERAL(50, 657, 15), // "currentUserType"
+QT_MOC_LITERAL(51, 673, 8), // "UserType"
+QT_MOC_LITERAL(52, 682, 7), // "Patient"
+QT_MOC_LITERAL(53, 690, 6) // "Doctor"
 
     },
     "AuthManager\0loginSuccess\0\0userId\0"
@@ -93,9 +95,9 @@ QT_MOC_LITERAL(51, 651, 6) // "Doctor"
     "bmi\0lungLevel\0bpLevel\0overall\0"
     "healthSubmitFailed\0isAuthenticatedChanged\0"
     "remainingAttemptsChanged\0currentUserIdChanged\0"
-    "onConnected\0onErrorOccurred\0"
-    "QAbstractSocket::SocketError\0socketError\0"
-    "onReadyRead\0onHttpLoginFinished\0"
+    "currentUserTypeChanged\0onConnected\0"
+    "onErrorOccurred\0QAbstractSocket::SocketError\0"
+    "socketError\0onReadyRead\0onHttpLoginFinished\0"
     "QNetworkReply*\0reply\0onHttpRegisterFinished\0"
     "onHttpHealthSubmitFinished\0setApiBase\0"
     "url\0requestLogin\0username\0password\0"
@@ -103,7 +105,8 @@ QT_MOC_LITERAL(51, 651, 6) // "Doctor"
     "gender\0submitHealthData\0heightCm\0"
     "weightKg\0lungMl\0bp\0setRemainingAttempts\0"
     "attempts\0isAuthenticated\0remainingAttempts\0"
-    "currentUserId\0UserType\0Patient\0Doctor"
+    "currentUserId\0currentUserType\0UserType\0"
+    "Patient\0Doctor"
 };
 #undef QT_MOC_LITERAL
 
@@ -113,38 +116,39 @@ static const uint qt_meta_data_AuthManager[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      20,   14, // methods
-       3,  190, // properties
-       1,  202, // enums/sets
+      21,   14, // methods
+       4,  196, // properties
+       1,  212, // enums/sets
        0,    0, // constructors
        0,       // flags
-       9,       // signalCount
+      10,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  114,    2, 0x06 /* Public */,
-       6,    1,  119,    2, 0x06 /* Public */,
-       8,    0,  122,    2, 0x06 /* Public */,
-       9,    1,  123,    2, 0x06 /* Public */,
-      10,    4,  126,    2, 0x06 /* Public */,
-      15,    1,  135,    2, 0x06 /* Public */,
-      16,    0,  138,    2, 0x06 /* Public */,
-      17,    0,  139,    2, 0x06 /* Public */,
-      18,    0,  140,    2, 0x06 /* Public */,
+       1,    2,  119,    2, 0x06 /* Public */,
+       6,    1,  124,    2, 0x06 /* Public */,
+       8,    0,  127,    2, 0x06 /* Public */,
+       9,    1,  128,    2, 0x06 /* Public */,
+      10,    4,  131,    2, 0x06 /* Public */,
+      15,    1,  140,    2, 0x06 /* Public */,
+      16,    0,  143,    2, 0x06 /* Public */,
+      17,    0,  144,    2, 0x06 /* Public */,
+      18,    0,  145,    2, 0x06 /* Public */,
+      19,    0,  146,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      19,    0,  141,    2, 0x08 /* Private */,
-      20,    1,  142,    2, 0x08 /* Private */,
-      23,    0,  145,    2, 0x08 /* Private */,
-      24,    1,  146,    2, 0x08 /* Private */,
-      27,    1,  149,    2, 0x08 /* Private */,
-      28,    1,  152,    2, 0x08 /* Private */,
+      20,    0,  147,    2, 0x08 /* Private */,
+      21,    1,  148,    2, 0x08 /* Private */,
+      24,    0,  151,    2, 0x08 /* Private */,
+      25,    1,  152,    2, 0x08 /* Private */,
+      28,    1,  155,    2, 0x08 /* Private */,
+      29,    1,  158,    2, 0x08 /* Private */,
 
  // methods: name, argc, parameters, tag, flags
-      29,    1,  155,    2, 0x02 /* Public */,
-      31,    2,  158,    2, 0x02 /* Public */,
-      34,    7,  163,    2, 0x02 /* Public */,
-      39,    4,  178,    2, 0x02 /* Public */,
-      44,    1,  187,    2, 0x02 /* Public */,
+      30,    1,  161,    2, 0x02 /* Public */,
+      32,    2,  164,    2, 0x02 /* Public */,
+      35,    7,  169,    2, 0x02 /* Public */,
+      40,    4,  184,    2, 0x02 /* Public */,
+      45,    1,  193,    2, 0x02 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int, 0x80000000 | 4,    3,    5,
@@ -156,38 +160,41 @@ static const uint qt_meta_data_AuthManager[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 21,   22,
+    QMetaType::Void, 0x80000000 | 22,   23,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 25,   26,
-    QMetaType::Void, 0x80000000 | 25,   26,
-    QMetaType::Void, 0x80000000 | 25,   26,
+    QMetaType::Void, 0x80000000 | 26,   27,
+    QMetaType::Void, 0x80000000 | 26,   27,
+    QMetaType::Void, 0x80000000 | 26,   27,
 
  // methods: parameters
-    QMetaType::Void, QMetaType::QString,   30,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString,   32,   33,
-    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::Int, QMetaType::QString,    5,   32,   33,   35,   36,   37,   38,
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Int, QMetaType::QString,   40,   41,   42,   43,
-    QMetaType::Void, QMetaType::Int,   45,
+    QMetaType::Void, QMetaType::QString,   31,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString,   33,   34,
+    QMetaType::Void, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::QString, QMetaType::Int, QMetaType::QString,    5,   33,   34,   36,   37,   38,   39,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Int, QMetaType::QString,   41,   42,   43,   44,
+    QMetaType::Void, QMetaType::Int,   46,
 
  // properties: name, type, flags
-      46, QMetaType::Bool, 0x00495001,
-      47, QMetaType::Int, 0x00495001,
+      47, QMetaType::Bool, 0x00495001,
       48, QMetaType::Int, 0x00495001,
+      49, QMetaType::Int, 0x00495001,
+      50, 0x80000000 | 51, 0x00495009,
 
  // properties: notify_signal_id
        6,
        7,
        8,
+       9,
 
  // enums: name, alias, flags, count, data
-      49,   49, 0x0,    2,  207,
+      51,   51, 0x0,    2,  217,
 
  // enum data: key, value
-      50, uint(AuthManager::Patient),
-      51, uint(AuthManager::Doctor),
+      52, uint(AuthManager::Patient),
+      53, uint(AuthManager::Doctor),
 
        0        // eod
 };
@@ -207,34 +214,28 @@ void AuthManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 6: _t->isAuthenticatedChanged(); break;
         case 7: _t->remainingAttemptsChanged(); break;
         case 8: _t->currentUserIdChanged(); break;
-        case 9: _t->onConnected(); break;
-        case 10: _t->onErrorOccurred((*reinterpret_cast< QAbstractSocket::SocketError(*)>(_a[1]))); break;
-        case 11: _t->onReadyRead(); break;
-        case 12: _t->onHttpLoginFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
-        case 13: _t->onHttpRegisterFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
-        case 14: _t->onHttpHealthSubmitFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
-        case 15: _t->setApiBase((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 16: _t->requestLogin((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
-        case 17: _t->requestRegister((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4])),(*reinterpret_cast< const QString(*)>(_a[5])),(*reinterpret_cast< int(*)>(_a[6])),(*reinterpret_cast< const QString(*)>(_a[7]))); break;
-        case 18: _t->submitHealthData((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4]))); break;
-        case 19: _t->setRemainingAttempts((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: _t->currentUserTypeChanged(); break;
+        case 10: _t->onConnected(); break;
+        case 11: _t->onErrorOccurred((*reinterpret_cast< QAbstractSocket::SocketError(*)>(_a[1]))); break;
+        case 12: _t->onReadyRead(); break;
+        case 13: _t->onHttpLoginFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 14: _t->onHttpRegisterFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 15: _t->onHttpHealthSubmitFinished((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 16: _t->setApiBase((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 17: _t->requestLogin((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
+        case 18: _t->requestRegister((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2])),(*reinterpret_cast< const QString(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4])),(*reinterpret_cast< const QString(*)>(_a[5])),(*reinterpret_cast< int(*)>(_a[6])),(*reinterpret_cast< const QString(*)>(_a[7]))); break;
+        case 19: _t->submitHealthData((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3])),(*reinterpret_cast< const QString(*)>(_a[4]))); break;
+        case 20: _t->setRemainingAttempts((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 10:
+        case 11:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QAbstractSocket::SocketError >(); break;
-            }
-            break;
-        case 12:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QNetworkReply* >(); break;
             }
             break;
         case 13:
@@ -245,6 +246,13 @@ void AuthManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             }
             break;
         case 14:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QNetworkReply* >(); break;
+            }
+            break;
+        case 15:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
@@ -317,6 +325,13 @@ void AuthManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
                 return;
             }
         }
+        {
+            using _t = void (AuthManager::*)();
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AuthManager::currentUserTypeChanged)) {
+                *result = 9;
+                return;
+            }
+        }
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
@@ -327,6 +342,7 @@ void AuthManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 0: *reinterpret_cast< bool*>(_v) = _t->isAuthenticated(); break;
         case 1: *reinterpret_cast< int*>(_v) = _t->remainingAttempts(); break;
         case 2: *reinterpret_cast< int*>(_v) = _t->currentUserId(); break;
+        case 3: *reinterpret_cast< UserType*>(_v) = _t->currentUserType(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -364,29 +380,29 @@ int AuthManager::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 20)
+        if (_id < 21)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 20;
+        _id -= 21;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 20)
+        if (_id < 21)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 20;
+        _id -= 21;
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyDesignable) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyScriptable) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyStored) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyEditable) {
-        _id -= 3;
+        _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 3;
+        _id -= 4;
     }
 #endif // QT_NO_PROPERTIES
     return _id;
@@ -449,6 +465,12 @@ void AuthManager::remainingAttemptsChanged()
 void AuthManager::currentUserIdChanged()
 {
     QMetaObject::activate(this, &staticMetaObject, 8, nullptr);
+}
+
+// SIGNAL 9
+void AuthManager::currentUserTypeChanged()
+{
+    QMetaObject::activate(this, &staticMetaObject, 9, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

@@ -1,6 +1,9 @@
 QT       += core gui \
     network \
-    qml
+    qml\
+    multimedia \
+    quick multimedia \
+    core gui quick qml multimedia network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,10 +16,12 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     client.cpp \
+    src/asruploader.cpp \
     src/authmanager.cpp
 
 HEADERS += \
     client.h \
+    src/asruploader.h \
     src/authmanager.h
 
 FORMS += \
@@ -33,4 +38,5 @@ RESOURCES += \
 DISTFILES += \
     qml/HealthInputScreen.qml \
     qml/LoginScreen.qml \
-    qml/Main.qml
+    qml/Main.qml \
+    qml/components/VoiceInputButton.qml

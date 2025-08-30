@@ -6,8 +6,6 @@
 #include <QNetworkReply>
 #include <QTcpSocket>
 #include <QJsonObject>
-// 显式引入，避免 std::function 某些编译器下缺失声明
-#include <functional>
 
 class AuthManager : public QObject
 {
@@ -15,6 +13,7 @@ class AuthManager : public QObject
     Q_PROPERTY(bool isAuthenticated READ isAuthenticated NOTIFY isAuthenticatedChanged)
     Q_PROPERTY(int remainingAttempts READ remainingAttempts NOTIFY remainingAttemptsChanged)
     Q_PROPERTY(int currentUserId READ currentUserId NOTIFY currentUserIdChanged)
+    Q_PROPERTY(UserType currentUserType READ currentUserType NOTIFY currentUserTypeChanged)
 
 public:
     explicit AuthManager(QObject *parent = nullptr);
@@ -22,7 +21,6 @@ public:
     enum UserType { Patient = 0, Doctor = 1 };
     Q_ENUM(UserType)
 
-    // 配置 HTTP API 基础地址，例如 "http://127.0.0.1:8080"
     Q_INVOKABLE void setApiBase(const QString &url);
 
     // 暴露给 QML 的 HTTP 版本
@@ -36,6 +34,7 @@ public:
     bool isAuthenticated() const;
     int remainingAttempts() const;
     int currentUserId() const;
+    UserType currentUserType() const { return m_userType; }
 
 signals:
     void loginSuccess(int userId, AuthManager::UserType userType);
@@ -50,9 +49,10 @@ signals:
     void isAuthenticatedChanged();
     void remainingAttemptsChanged();
     void currentUserIdChanged();
+    void currentUserTypeChanged();
 
 private slots:
-    // TCP 槽（HTTP 路线下仅记录日志，避免影响 UI）
+    // TCP
     void onConnected();
     void onErrorOccurred(QAbstractSocket::SocketError socketError);
     void onReadyRead();
@@ -63,12 +63,12 @@ private slots:
     void onHttpHealthSubmitFinished(QNetworkReply* reply);
 
 private:
-    // TCP 版本保留为内部使用（HTTP 路线中不触发 UI 错误，仅用于兼容/后续可能扩展）
+    // TCP 版本保留为内部使用，避免与 QML 冲突
     void requestLogin(UserType userType, const QString &username, const QString &password);
     void requestRegister(UserType userType, const QString &username, const QString &password,
                          const QString &phone, const QString &address, int age, const QString &gender);
 
-    // 公共工具（带超时，默认 15000ms）
+    // 公共工具
     void sendTcpJson(const QJsonObject &obj);
     void postHttpJson(const QString &path,
                       const QJsonObject &obj,
@@ -92,6 +92,7 @@ private:
     bool m_isAuthenticated = false;
     int m_remainingAttempts = 5;
     int m_userId = -1;
+    UserType m_userType = Patient;
 };
 
 #endif // AUTHMANAGER_H

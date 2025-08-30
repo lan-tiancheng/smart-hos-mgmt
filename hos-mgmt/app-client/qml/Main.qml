@@ -6,19 +6,43 @@ import com.mycompany.app 1.0
 ApplicationWindow {
     id: window
     visible: true
-    width: 640
-    height: 480
+    width: 800
+    height: 600
     title: "智慧医疗系统"
 
-    // 登录界面
-    LoginScreen {
-        id: loginScreen
+    // 根据认证状态与用户类型切换界面：
+    // - 未登录：显示登录/注册界面
+    // - 已登录且为病人：显示体检数据提交
+    // - 已登录且为医生：显示占位信息（可后续扩展）
+    Loader {
+        id: router
         anchors.fill: parent
+        sourceComponent: !authManager.isAuthenticated
+                         ? loginView
+                         : (authManager.currentUserType === AuthManager.Patient ? patientView : doctorView)
+    }
 
-        // 接收登录成功信号，可在此进行导航或加载主界面
-        onLoginSuccess: function(userType) {
-            console.log("登录成功，用户类型：", userType)
-            // TODO: 在此切换到主界面（医生/病人）
+    Component {
+        id: loginView
+        LoginScreen { anchors.fill: parent }
+    }
+
+    Component {
+        id: patientView
+        HealthInputScreen { anchors.fill: parent }
+    }
+
+    Component {
+        id: doctorView
+        Rectangle {
+            anchors.fill: parent
+            color: "#ffffff"
+            Column {
+                anchors.centerIn: parent
+                spacing: 12
+                Label { text: "医生用户已登录"; font.pixelSize: 22 }
+                Label { text: "医生端主界面功能待接入"; color: "#666666" }
+            }
         }
     }
 }

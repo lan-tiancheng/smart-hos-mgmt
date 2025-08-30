@@ -1,91 +1,52 @@
 # This Python file uses the following encoding: utf-8
-
-# if __name__ == "__main__":
-#     pass
-# server.py （替换 DB 相关实现为 Redis）
 from flask import Flask, request, jsonify
-import redis, re
-from werkzeug.security import generate_password_hash, check_password_hash
+import os, re
 from datetime import datetime
 
+from services import AuthService, AppointmentService, MedicalService, AttendanceService, ChatService
+from infra.redis_store import get_redis
+from asr_service import load_model, recognize_wav
+
 app = Flask(__name__)
-# 连接 Redis（默认本机）
-r = redis.Redis(host='127.0.0.1', port=6379, db=0, decode_responses=True)
 
-# helper: create user atomically (prevent duplicate username)
-def create_user_atomic(username, password_hash, user_type, phone, address, age, gender):
-    username_key = f"username:{username}"
-    with r.pipeline() as pipe:
-        while True:
-            try:
-                # WATCH username key to detect concurrent writes
-                pipe.watch(username_key)
-                if r.exists(username_key):
-                    pipe.unwatch()
-                    return None  # 已存在
-                # 执行事务：INCR next_user_id + HSET user + SET username:{name} = id
-                pipe.multi()
-                pipe.incr("next_user_id")
-                res = pipe.execute()
-                # res[0] 是新 id
-                new_id = res[0]
-                user_key = f"user:{new_id}"
-                pipe = r.pipeline()
-                pipe.hset(user_key, mapping={
-                    "username": username,
-                    "password_hash": password_hash,
-                    "user_type": user_type,
-                    "phone": phone,
-                    "address": address,
-                    "age": age,
-                    "gender": gender,
-                    "created_at": datetime.utcnow().isoformat()
-                })
-                pipe.set(username_key, new_id)
-                pipe.execute()
-                return new_id
-            except redis.WatchError:
-                # 竞争失败，重试
-                continue
+# 可通过环境变量 VOSK_MODEL_DIR 指定中文模型目录（例如 models/vosk-model-small-cn-0.22）
+VOSK_MODEL_DIR = os.environ.get("VOSK_MODEL_DIR", os.path.join(os.path.dirname(__file__), "models", "vosk-model-small-cn-0.22"))
+try:
+    load_model(VOSK_MODEL_DIR)
+except Exception as e:
+    # 不终止服务；仅在首次访问 /api/asr 时再报错
+    app.logger.warning("ASR 模型加载失败：%s", e)
 
-@app.route("/api/auth/register", methods=["POST"])
-def register():
-    data = request.get_json(silent=True) or {}
-    username = data.get("username","").strip()
-    pwd = data.get("password","")
-    user_type = data.get("userType","patient")
-    phone = data.get("phone","")
-    address = data.get("address","")
-    age = int(data.get("age",0) or 0)
-    gender = data.get("gender","")
-    if not username or not pwd:
-        return jsonify(success=False, reason="用户名/密码不能为空"), 400
+auth_svc = AuthService()
+appt_svc = AppointmentService()
+med_svc = MedicalService()
+att_svc = AttendanceService()
+chat_svc = ChatService()
 
-    pwd_hash = generate_password_hash(pwd)
-    new_id = create_user_atomic(username, pwd_hash, user_type, phone, address, age, gender)
-    if new_id is None:
-        return jsonify(success=False, reason="用户名已存在"), 400
-    return jsonify(success=True, userId=int(new_id))
+@app.route("/api/asr", methods=["POST"])
+def api_asr():
+    # multipart/form-data: field name "audio"
+    if 'audio' not in request.files:
+        return jsonify(success=False, reason="缺少音频文件字段 audio"), 400
+    f = request.files['audio']
+    if f.filename == '':
+        return jsonify(success=False, reason="音频文件名为空"), 400
 
-@app.route("/api/auth/login", methods=["POST"])
-def login():
-    data = request.get_json(silent=True) or {}
-    username = data.get("username","").strip()
-    pwd = data.get("password","")
-    if not username or not pwd:
-        return jsonify(success=False, reason="用户名/密码不能为空"), 400
+    # 临时保存并识别
+    tmp_dir = os.path.join(os.path.dirname(__file__), "tmp")
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_path = os.path.join(tmp_dir, "asr.wav")
+    f.save(tmp_path)
 
-    username_key = f"username:{username}"
-    uid = r.get(username_key)
-    if not uid:
-        return jsonify(success=False, reason="用户不存在"), 400
-    user_key = f"user:{uid}"
-    pwd_hash = r.hget(user_key, "password_hash")
-    user_type = r.hget(user_key, "user_type") or "patient"
-    if not pwd_hash or not check_password_hash(pwd_hash, pwd):
-        return jsonify(success=False, reason="用户名或密码错误"), 400
-    return jsonify(success=True, userId=int(uid), userType=user_type)
+    try:
+        # 确保已加载模型
+        load_model(VOSK_MODEL_DIR)
+        text = recognize_wav(tmp_path)
+        return jsonify(success=True, text=text)
+    except Exception as e:
+        return jsonify(success=False, reason=str(e)), 500
 
+# 其余已有路由（登录/注册/体检提交）保持不变...
 def assess_bmi(height_cm, weight_kg):
     h = height_cm / 100.0
     bmi = weight_kg / (h*h) if h > 0 else 0
@@ -151,25 +112,19 @@ def submit_health():
         flags.append("肺活量")
     overall = "健康" if not flags else "需关注：" + "、".join(flags)
 
-    # 生成 record id 并写入 hash，同时把 record id 加入用户记录列表
-    record_id = r.incr("next_record_id")
-    rec_key = f"record:{record_id}"
-    r.hset(rec_key, mapping={
-        "user_id": user_id,
-        "height": height,
-        "weight": weight,
-        "bmi": bmi,
-        "lung": lung,
-        "bp": bp,
-        "lung_level": lung_level,
-        "bp_level": bp_level,
-        "overall": overall,
-        "created_at": datetime.utcnow().isoformat()
+    r = get_redis()
+    r.hset(f"user:{user_id}:last_health", mapping={
+        "height": height, "weight": weight, "lung": lung, "bp": bp,
+        "bmi": round(bmi, 1),
+        "bmiLevel": bmi_cat, "bpLevel": bp_level, "lungLevel": lung_level,
+        "overall": overall, "time": datetime.utcnow().isoformat()
     })
-    # 将记录 id 加入用户的历史列表（最近记录放左侧）
-    r.lpush(f"user:{user_id}:records", record_id)
 
-    return jsonify(success=True, bmi=bmi, lungLevel=lung_level, bpLevel=bp_level, overall=overall)
+    return jsonify(success=True,
+                   bmi=round(bmi, 1),
+                   lungLevel=lung_level,
+                   bpLevel=bp_level,
+                   overall=overall)
+
 if __name__ == "__main__":
-    # 确保 8080 没有被其它进程占用（比如上面的 QTcpServer）
     app.run(host="127.0.0.1", port=8080, debug=True)

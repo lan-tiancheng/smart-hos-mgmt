@@ -5,7 +5,7 @@
 #include <QNetworkRequest>
 #include <QTimer>
 
-// ------------------------- 构造函数 -------------------------
+// ------------------------- 构造与配置 -------------------------
 
 AuthManager::AuthManager(QObject *parent)
     : QObject(parent)
@@ -16,56 +16,13 @@ AuthManager::AuthManager(QObject *parent)
             this, &AuthManager::onErrorOccurred);
 }
 
-// ------------------------- 配置 -------------------------
-
 void AuthManager::setApiBase(const QString &url)
 {
     m_apiBase = url;
     qDebug() << "AuthManager: API base set to" << m_apiBase;
 }
 
-// ------------------------- TCP 请求（内部/兼容保留） -------------------------
-
-void AuthManager::requestLogin(UserType userType, const QString &username, const QString &password)
-{
-    // HTTP 路线：禁止通过 TCP 抛 UI 错误，避免“无法连接到服务器”误导
-    if (m_socket.state() != QAbstractSocket::ConnectedState) {
-        qWarning() << "[TCP] requestLogin called while TCP is disabled or not connected. Ignored.";
-        return;
-    }
-
-    QJsonObject request;
-    request["type"] = "login";
-    request["userType"] = (userType == Patient) ? "patient" : "doctor";
-    request["username"] = username;
-    request["password"] = password;
-
-    sendTcpJson(request);
-}
-
-void AuthManager::requestRegister(UserType userType, const QString &username, const QString &password,
-                                  const QString &phone, const QString &address, int age, const QString &gender)
-{
-    // HTTP 路线：禁止通过 TCP 抛 UI 错误，避免“无法连接到服务器”误导
-    if (m_socket.state() != QAbstractSocket::ConnectedState) {
-        qWarning() << "[TCP] requestRegister called while TCP is disabled or not connected. Ignored.";
-        return;
-    }
-
-    QJsonObject request;
-    request["type"] = "register";
-    request["userType"] = (userType == Patient) ? "patient" : "doctor";
-    request["username"] = username;
-    request["password"] = password;
-    request["phone"] = phone;
-    request["address"] = address;
-    request["age"] = age;
-    request["gender"] = gender;
-
-    sendTcpJson(request);
-}
-
-// ------------------------- HTTP 请求（暴露给 QML） -------------------------
+// ------------------------- HTTP（暴露给 QML） -------------------------
 
 void AuthManager::requestLogin(const QString &username, const QString &password)
 {
@@ -122,15 +79,14 @@ void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl,
     }
 
     QJsonObject obj;
-    obj["type"]   = "health_submit";
+    obj["type"] = "health_submit";
     obj["userId"] = m_userId;
     obj["height"] = heightCm;
     obj["weight"] = weightKg;
-    obj["lung"]   = lungMl;
-    obj["bp"]     = bp;
+    obj["lung"] = lungMl;
+    obj["bp"] = bp;
 
-    // 注意：服务端目前未见 /health 路由，如无对应实现，此请求将失败
-    const QString path = "/health";
+    const QString path = "/api/health/submit";
     qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
     postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpHealthSubmitFinished(reply); }, 15000);
 }
@@ -160,25 +116,17 @@ void AuthManager::postHttpJson(const QString &path,
 
     QNetworkReply *reply = m_nam.post(req, QJsonDocument(obj).toJson(QJsonDocument::Compact));
 
-    // 标注请求信息，便于日志和超时判断
     reply->setProperty("requestPath", path);
     reply->setProperty("timedOut", false);
 
-    // 打印网络错误
-    connect(reply, &QNetworkReply::errorOccurred, this, [reply](QNetworkReply::NetworkError code){
-        Q_UNUSED(code);
-        qWarning() << "HTTP error on" << reply->property("requestPath").toString() << ":" << reply->errorString();
-    });
-
-    // 超时控制：超时则 abort，finished 会照常触发
     auto timer = new QTimer(reply);
     timer->setSingleShot(true);
     timer->start(timeoutMs > 0 ? timeoutMs : 15000);
-    connect(timer, &QTimer::timeout, reply, [this, reply]() {
+    connect(timer, &QTimer::timeout, reply, [reply]() {
         if (reply->isRunning()) {
             reply->setProperty("timedOut", true);
             qWarning() << "HTTP request timed out:" << reply->property("requestPath").toString();
-            reply->abort(); // 将触发 finished -> handleHttpReply -> 发送失败信号
+            reply->abort();
         }
     });
 
@@ -187,7 +135,7 @@ void AuthManager::postHttpJson(const QString &path,
     });
 }
 
-// ------------------------- TCP 槽函数（HTTP 路线下仅日志） -------------------------
+// ------------------------- TCP 槽函数（HTTP 模式下仅日志） -------------------------
 
 void AuthManager::onConnected()
 {
@@ -197,34 +145,24 @@ void AuthManager::onConnected()
 void AuthManager::onErrorOccurred(QAbstractSocket::SocketError socketError)
 {
     Q_UNUSED(socketError);
-    // 不再把 TCP 错误透传给 UI，避免“无法连接到服务器”干扰 HTTP 提示
     qWarning() << "[TCP] Socket error (ignored in HTTP mode):" << m_socket.errorString();
 }
 
 void AuthManager::onReadyRead()
 {
-    // 若未来需要复用 TCP，可保留解析逻辑；HTTP 路线下基本不会触发
     m_pendingBuffer.append(m_socket.readAll());
-
     while (true) {
         int idx = m_pendingBuffer.indexOf('\n');
         if (idx == -1) break;
-
         QByteArray jsonData = m_pendingBuffer.left(idx);
         m_pendingBuffer.remove(0, idx + 1);
-
         QJsonDocument doc = QJsonDocument::fromJson(jsonData);
         if (doc.isObject()) {
             QJsonObject obj = doc.object();
             QString type = obj.value("type").toString();
-
-            if (type == "login") {
-                processLoginResponse(obj);
-            } else if (type == "register") {
-                processRegisterResponse(obj);
-            } else if (type == "health_submit") {
-                processHealthSubmitResponse(obj);
-            }
+            if (type == "login")       processLoginResponse(obj);
+            else if (type == "register") processRegisterResponse(obj);
+            else if (type == "health_submit") processHealthSubmitResponse(obj);
         }
     }
 }
@@ -284,10 +222,12 @@ void AuthManager::processLoginResponse(const QJsonObject &resp)
         emit isAuthenticatedChanged();
         m_userId = resp.value("userId").toInt();
         emit currentUserIdChanged();
-        QString userTypeStr = resp.value("userType").toString();
-        UserType userType = (userTypeStr == "patient") ? Patient : Doctor;
 
-        emit loginSuccess(m_userId, userType);
+        QString userTypeStr = resp.value("userType").toString("patient");
+        m_userType = (userTypeStr == "patient") ? Patient : Doctor;
+        emit currentUserTypeChanged();
+
+        emit loginSuccess(m_userId, m_userType);
     } else {
         int rem = resp.value("remainingAttempts").toInt(m_remainingAttempts);
         setRemainingAttempts(rem);

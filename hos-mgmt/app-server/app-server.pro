@@ -1,4 +1,5 @@
-QT       += core gui \
+QT       += core\
+    core gui \
     network \
     qml \
     quick
@@ -43,4 +44,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES +=
 
 DISTFILES += \
-    server.py
+    asr_service.py \
+    domain/_init_.py \
+    domain/entities.py \
+    infra/_inti_.py \
+    infra/redis_store.py \
+    repositories.py \
+    server.py \
+    services.py
