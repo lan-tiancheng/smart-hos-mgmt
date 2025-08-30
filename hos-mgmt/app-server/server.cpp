@@ -2,6 +2,7 @@
 #include "qtcpsocket.h"
 #include <QDebug>
 
+// server 进程端口是9090！！
 Server::Server(QObject *parent)
     : QObject(parent)
 {
@@ -13,7 +14,7 @@ Server::Server(QObject *parent)
 
 void Server::startServer()
 {
-    if (!m_tcpServer->listen(QHostAddress::Any, 8080)) {
+    if (!m_tcpServer->listen(QHostAddress::Any, 9090)) {
         qDebug() << "Server could not start! Error:" << m_tcpServer->errorString();
     } else {
         qDebug() << "Server started! Listening on port 8080...";

@@ -24,12 +24,13 @@ void AuthManager::setApiBase(const QString &url)
     qDebug() << "AuthManager: API base set to" << m_apiBase;
 }
 
-// ------------------------- TCP 请求（内部） -------------------------
+// ------------------------- TCP 请求（内部/兼容保留） -------------------------
 
 void AuthManager::requestLogin(UserType userType, const QString &username, const QString &password)
 {
+    // HTTP 路线：禁止通过 TCP 抛 UI 错误，避免“无法连接到服务器”误导
     if (m_socket.state() != QAbstractSocket::ConnectedState) {
-        emit loginFailed("无法连接到服务器。");
+        qWarning() << "[TCP] requestLogin called while TCP is disabled or not connected. Ignored.";
         return;
     }
 
@@ -45,8 +46,9 @@ void AuthManager::requestLogin(UserType userType, const QString &username, const
 void AuthManager::requestRegister(UserType userType, const QString &username, const QString &password,
                                   const QString &phone, const QString &address, int age, const QString &gender)
 {
+    // HTTP 路线：禁止通过 TCP 抛 UI 错误，避免“无法连接到服务器”误导
     if (m_socket.state() != QAbstractSocket::ConnectedState) {
-        emit registerFailed("无法连接到服务器。");
+        qWarning() << "[TCP] requestRegister called while TCP is disabled or not connected. Ignored.";
         return;
     }
 
@@ -69,7 +71,7 @@ void AuthManager::requestLogin(const QString &username, const QString &password)
 {
     if (m_apiBase.isEmpty()) {
         qWarning() << "AuthManager: API base URL is not set!";
-        emit loginFailed("客户端错误：API 基础地址未设置");
+        emit loginFailed(QStringLiteral("客户端错误：API 基础地址未设置"));
         return;
     }
 
@@ -78,8 +80,9 @@ void AuthManager::requestLogin(const QString &username, const QString &password)
     obj["username"] = username;
     obj["password"] = password;
 
-    qDebug() << "POST" << (m_apiBase + "/login") << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    postHttpJson("/login", obj, [this](QNetworkReply *reply) { onHttpLoginFinished(reply); }, 15000);
+    const QString path = "/api/auth/login";
+    qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpLoginFinished(reply); }, 15000);
 }
 
 void AuthManager::requestRegister(const QString &userType, const QString &username, const QString &password,
@@ -87,7 +90,7 @@ void AuthManager::requestRegister(const QString &userType, const QString &userna
 {
     if (m_apiBase.isEmpty()) {
         qWarning() << "AuthManager: API base URL is not set!";
-        emit registerFailed("客户端错误：API 基础地址未设置");
+        emit registerFailed(QStringLiteral("客户端错误：API 基础地址未设置"));
         return;
     }
 
@@ -101,32 +104,35 @@ void AuthManager::requestRegister(const QString &userType, const QString &userna
     obj["age"] = age;
     obj["gender"] = gender;
 
-    qDebug() << "POST" << (m_apiBase + "/register") << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    postHttpJson("/register", obj, [this](QNetworkReply *reply) { onHttpRegisterFinished(reply); }, 15000);
+    const QString path = "/api/auth/register";
+    qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpRegisterFinished(reply); }, 15000);
 }
 
 void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl, const QString &bp)
 {
     if (!m_isAuthenticated || m_userId <= 0) {
-        emit healthSubmitFailed("未登录或 userId 无效");
+        emit healthSubmitFailed(QStringLiteral("未登录或 userId 无效"));
         return;
     }
     if (m_apiBase.isEmpty()) {
         qWarning() << "AuthManager: API base URL is not set!";
-        emit healthSubmitFailed("客户端错误：API 基础地址未设置");
+        emit healthSubmitFailed(QStringLiteral("客户端错误：API 基础地址未设置"));
         return;
     }
 
     QJsonObject obj;
-    obj["type"] = "health_submit";
+    obj["type"]   = "health_submit";
     obj["userId"] = m_userId;
     obj["height"] = heightCm;
     obj["weight"] = weightKg;
-    obj["lung"] = lungMl;
-    obj["bp"] = bp;
+    obj["lung"]   = lungMl;
+    obj["bp"]     = bp;
 
-    qDebug() << "POST" << (m_apiBase + "/health") << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    postHttpJson("/health", obj, [this](QNetworkReply *reply) { onHttpHealthSubmitFinished(reply); }, 15000);
+    // 注意：服务端目前未见 /health 路由，如无对应实现，此请求将失败
+    const QString path = "/health";
+    qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpHealthSubmitFinished(reply); }, 15000);
 }
 
 // ------------------------- TCP/HTTP 公共函数 -------------------------
@@ -154,7 +160,7 @@ void AuthManager::postHttpJson(const QString &path,
 
     QNetworkReply *reply = m_nam.post(req, QJsonDocument(obj).toJson(QJsonDocument::Compact));
 
-    // 标注请求信息，方便日志和超时判断
+    // 标注请求信息，便于日志和超时判断
     reply->setProperty("requestPath", path);
     reply->setProperty("timedOut", false);
 
@@ -172,7 +178,7 @@ void AuthManager::postHttpJson(const QString &path,
         if (reply->isRunning()) {
             reply->setProperty("timedOut", true);
             qWarning() << "HTTP request timed out:" << reply->property("requestPath").toString();
-            reply->abort(); // 将触发 finished -> handleHttpReply -> 发出失败信号
+            reply->abort(); // 将触发 finished -> handleHttpReply -> 发送失败信号
         }
     });
 
@@ -181,7 +187,7 @@ void AuthManager::postHttpJson(const QString &path,
     });
 }
 
-// ------------------------- TCP 槽函数 -------------------------
+// ------------------------- TCP 槽函数（HTTP 路线下仅日志） -------------------------
 
 void AuthManager::onConnected()
 {
@@ -191,12 +197,13 @@ void AuthManager::onConnected()
 void AuthManager::onErrorOccurred(QAbstractSocket::SocketError socketError)
 {
     Q_UNUSED(socketError);
-    qDebug() << "Socket error:" << m_socket.errorString();
-    emit loginFailed("TCP 连接失败：" + m_socket.errorString());
+    // 不再把 TCP 错误透传给 UI，避免“无法连接到服务器”干扰 HTTP 提示
+    qWarning() << "[TCP] Socket error (ignored in HTTP mode):" << m_socket.errorString();
 }
 
 void AuthManager::onReadyRead()
 {
+    // 若未来需要复用 TCP，可保留解析逻辑；HTTP 路线下基本不会触发
     m_pendingBuffer.append(m_socket.readAll());
 
     while (true) {
@@ -242,6 +249,7 @@ void AuthManager::onHttpHealthSubmitFinished(QNetworkReply* reply)
                     [this](const QString &err) { emit healthSubmitFailed(err); });
 }
 
+// 统一 HTTP 回包处理
 void AuthManager::handleHttpReply(QNetworkReply* reply,
                                   std::function<void(const QJsonObject&)> onSuccess,
                                   std::function<void(const QString&)> onError)
@@ -259,7 +267,7 @@ void AuthManager::handleHttpReply(QNetworkReply* reply,
     QByteArray data = reply->readAll();
     QJsonDocument d = QJsonDocument::fromJson(data);
     if (!d.isObject()) {
-        onError("响应格式错误。");
+        onError(QStringLiteral("响应格式错误。"));
     } else {
         onSuccess(d.object());
     }
@@ -283,7 +291,7 @@ void AuthManager::processLoginResponse(const QJsonObject &resp)
     } else {
         int rem = resp.value("remainingAttempts").toInt(m_remainingAttempts);
         setRemainingAttempts(rem);
-        emit loginFailed(resp.value("reason").toString("登录失败"));
+        emit loginFailed(resp.value("reason").toString(QStringLiteral("登录失败")));
     }
 }
 
@@ -293,7 +301,7 @@ void AuthManager::processRegisterResponse(const QJsonObject &resp)
     if (success) {
         emit registerSuccess();
     } else {
-        emit registerFailed(resp.value("reason").toString("注册失败"));
+        emit registerFailed(resp.value("reason").toString(QStringLiteral("注册失败")));
     }
 }
 
@@ -308,7 +316,7 @@ void AuthManager::processHealthSubmitResponse(const QJsonObject &resp)
             resp.value("overall").toString()
             );
     } else {
-        emit healthSubmitFailed(resp.value("reason").toString("提交失败"));
+        emit healthSubmitFailed(resp.value("reason").toString(QStringLiteral("提交失败")));
     }
 }
 

@@ -170,3 +170,6 @@ def submit_health():
     r.lpush(f"user:{user_id}:records", record_id)
 
     return jsonify(success=True, bmi=bmi, lungLevel=lung_level, bpLevel=bp_level, overall=overall)
+if __name__ == "__main__":
+    # 确保 8080 没有被其它进程占用（比如上面的 QTcpServer）
+    app.run(host="127.0.0.1", port=8080, debug=True)
