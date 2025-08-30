@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>pictures/患者信息.png</file>
+        <file>pictures/患者信息-copy.png</file>
+        <file>pictures/患者信息查询.png</file>
+        <file>pictures/考勤管理.png</file>
+        <file>pictures/考勤管理 (1).png</file>
+        <file>pictures/考勤管理 x32.png</file>
+        <file>pictures/考勤管理  x64.png</file>
+        <file>pictures/考勤管理  X48.png</file>
+        <file>pictures/患者信息-copy x64.png</file>
+        <file>pictures/患者信息x64.png</file>
+        <file>pictures/患者信息查询x64.png</file>
+        <file>pictures/考勤管理 x64.png</file>
+        <file>pictures/个人信息x64.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>pictures/4-聊天室x64.png</file>
+        <file>pictures/jiankangzhishu_x64.png</file>
+        <file>pictures/导航x64.png</file>
+        <file>pictures/远程医疗x64.png</file>
+    </qresource>
+</RCC>

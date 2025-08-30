@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Display</class>
+ <widget class="QDialog" name="Display">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1250</width>
+    <height>920</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>1232</width>
+     <height>661</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>波形</string>
+   </property>
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>601</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_2">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>40</y>
+      <width>601</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>252</y>
+      <width>601</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_4">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>252</y>
+      <width>601</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>464</y>
+      <width>601</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_6">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>464</y>
+      <width>601</width>
+      <height>181</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>18</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道1：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>625</x>
+      <y>18</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道2：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>230</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道3：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>625</x>
+      <y>230</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道4：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>442</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道5：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>625</x>
+      <y>442</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道6：</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>18</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="maxVisibleItems">
+     <number>12</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>导联I</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联II</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联III</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V6</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>18</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>12</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>导联I</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联II</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联III</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V6</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBox_3">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>230</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>12</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>导联I</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联II</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联III</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V6</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBox_4">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>230</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>3</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>12</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>导联I</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联II</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联III</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V6</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBox_5">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>442</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>4</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>12</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>导联I</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联II</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联III</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V6</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="comboBox_6">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>442</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>5</number>
+    </property>
+    <property name="maxVisibleItems">
+     <number>12</number>
+    </property>
+    <item>
+     <property name="text">
+      <string>导联I</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联II</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>导联III</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVL</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVR</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>AVF</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>V6</string>
+     </property>
+    </item>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>680</y>
+     <width>611</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>参数</string>
+   </property>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>70</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>心率：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>100</y>
+      <width>70</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>呼吸：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>170</y>
+      <width>70</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>体温：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>30</y>
+      <width>70</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>血压：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>100</y>
+      <width>70</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>血氧：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>170</y>
+      <width>70</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>血糖：</string>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>30</y>
+      <width>100</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="intValue" stdset="0">
+     <number>67</number>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber_2">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>100</y>
+      <width>100</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="intValue" stdset="0">
+     <number>23</number>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber_3">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>170</y>
+      <width>100</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="intValue" stdset="0">
+     <number>37</number>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber_4">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>30</y>
+      <width>100</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="intValue" stdset="0">
+     <number>96</number>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber_5">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>100</y>
+      <width>100</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="intValue" stdset="0">
+     <number>98</number>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="lcdNumber_6">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>170</y>
+      <width>100</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="value" stdset="0">
+     <double>4.200000000000000</double>
+    </property>
+    <property name="intValue" stdset="0">
+     <number>4</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>629</x>
+     <y>680</y>
+     <width>611</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>记录</string>
+   </property>
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>23</y>
+      <width>591</width>
+      <height>201</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

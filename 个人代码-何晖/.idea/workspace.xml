@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9ff7a574-6e69-4dcb-a320-4043e26ae961" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Server/GataServer/build/config.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/GataServer/build/untitled" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/GataServer/message.grpc.pb.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Server/GataServer/message.grpc.pb.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/GataServer/message.pb.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Server/GataServer/message.pb.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/GataServer/message.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Server/GataServer/message.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/NewstatusServer/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Server/NewstatusServer/config.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/NewstatusServer/message.grpc.pb.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Server/NewstatusServer/message.grpc.pb.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/NewstatusServer/message.pb.cc" beforeDir="false" afterPath="$PROJECT_DIR$/Server/NewstatusServer/message.pb.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/NewstatusServer/message.proto" beforeDir="false" afterPath="$PROJECT_DIR$/Server/NewstatusServer/message.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/mainServer/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Server/mainServer/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/mainServer/build/config.ini" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/mainServer/build/mainServer" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
+  <component name="ProjectId" id="2l4HvTtwbxSqAqXPTrXAWR4cqQa" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "Hehui's-work",
+    "last_opened_file_path": "/home/user/2024.8BIT_Project/2024-BIT-",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9ff7a574-6e69-4dcb-a320-4043e26ae961" name="Changes" comment="" />
+      <created>1724432658626</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1724432658626</updated>
+      <workItem from="1724432660291" duration="85000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="注册页面，登录页面，登录跳转信息传输完成，包括前端后端" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+</project>

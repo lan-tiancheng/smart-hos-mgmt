@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>pictures/门诊部.png</file>
+        <file>pictures/皮肤科.png</file>
+        <file>pictures/病人家属住宿.png</file>
+        <file>pictures/急诊部.png</file>
+        <file>pictures/妇科.png</file>
+        <file>pictures/外科.png</file>
+        <file>pictures/医院食堂.png</file>
+        <file>pictures/医生住宿.png</file>
+        <file>pictures/内科.png</file>
+        <file>pictures/儿科.png</file>
+        <file>pictures/住院部.png</file>
+        <file>pictures/XHW.png</file>
+        <file>pictures/menu.png</file>
+        <file>pictures/map.png</file>
+    </qresource>
+</RCC>

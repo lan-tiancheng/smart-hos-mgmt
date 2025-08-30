@@ -1,0 +1,12 @@
+# ninja log v6
+1	3955	1724498978501541901	CMakeFiles/statusServer.dir/ConfigMgr.cpp.o	4f2e47a4dd4e64cb
+0	4604	1724498978497533405	CMakeFiles/statusServer.dir/AsioIOServicePool.cpp.o	8b38d5711e252d3a
+5	6048	1724499046661876266	CMakeFiles/statusServer.dir/MysqlMgr.cpp.o	ac8659e8de4e4c2d
+4	6977	1724499046661876266	CMakeFiles/statusServer.dir/MysqlDao.cpp.o	ec8309ed04fbbd0a
+4	11598	1724499046661876266	CMakeFiles/statusServer.dir/ChatGrpcClient.cpp.o	dd983c48d3a9a74e
+3	12518	1724499046661876266	CMakeFiles/statusServer.dir/main.cpp.o	2252bbf8066a7aa8
+12519	14168	1724499059173586434	CMakeFiles/statusServer.dir/message.pb.cc.o	41a3624c6201bbd2
+6050	14278	1724499052707266217	CMakeFiles/statusServer.dir/RedisMgr.cpp.o	38823c164cd1563e
+11599	14688	1724499058251544615	CMakeFiles/statusServer.dir/message.grpc.pb.cc.o	e8018c70cec072ee
+6977	16065	1724499053633317129	CMakeFiles/statusServer.dir/StatusServiceImpl.cpp.o	f77f966426cd280c
+16065	19285	1724499062721442432	statusServer	9aad59869ab977ec

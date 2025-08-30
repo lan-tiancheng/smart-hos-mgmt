@@ -1,0 +1,122 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QTextToSpeech>
+#include <QVoice>
+#include <QTextEdit>
+#include "audio.h"//语音识别
+
+namespace Ui {
+class MainWindow;
+}
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    void soundstart();
+    void soundend();
+    ~MainWindow();
+
+private:
+    Ui::MainWindow *ui;
+    Audio *my_audio;
+    QTextToSpeech *my_say;
+    QPushButton *StartBtn;
+    QPushButton *EndBtn;
+    QTextEdit *textEditReco;
+};
+
+#endif // MAINWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QTextEdit>
+#include <QTextToSpeech>
+#include <QDebug>
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    my_audio = new Audio; // 语音识别对象
+    my_say = new QTextToSpeech(this); // 文字转语音播放对象，设置父对象为 MainWindow
+    StartBtn = new QPushButton("Start", this); // 创建按钮并设置文本
+    EndBtn = new QPushButton("End", this); // 创建按钮并设置文本
+
+    // 创建布局并将按钮和 QTextEdit 添加到布局中
+    QVBoxLayout *layout = new QVBoxLayout; // 创建垂直布局
+    layout->addWidget(StartBtn); // 添加 Start 按钮到布局
+    layout->addWidget(EndBtn); // 添加 End 按钮到布局
+
+    // 创建一个 QTextEdit 对象
+    textEditReco = new QTextEdit(this);
+    textEditReco->setPlaceholderText("Recognition result will appear here"); // 设置占位符文本
+    layout->addWidget(textEditReco); // 添加 QTextEdit 到布局
+
+    // 创建一个中央小部件并设置布局
+    QWidget *centralWidget = new QWidget(this); // 创建中央小部件
+    centralWidget->setLayout(layout); // 设置布局到中央小部件
+
+    // 设置中央小部件为主窗口的中央小部件
+    setCentralWidget(centralWidget);
+
+    // 连接信号和槽
+    connect(StartBtn, &QPushButton::clicked, this, &MainWindow::soundstart);
+    connect(EndBtn, &QPushButton::clicked, this, &MainWindow::soundend);
+}
+
+MainWindow::~MainWindow()
+{
+    delete my_audio;
+    delete my_say;
+    delete StartBtn;
+    delete EndBtn;
+    delete textEditReco;
+    delete ui;
+}
+
+void MainWindow::soundstart()
+{
+    my_audio->startAudio("audiofile");
+}
+
+void MainWindow::soundend()
+{
+    my_audio->stopAudio();
+    QString retStr = my_audio->startSpeech(); // 识别结果
+    textEditReco->setText(retStr); // 显示识别结果
+    my_say->say(retStr); // 播放识别结果
+    qDebug() << retStr; // 输出到调试窗口
+    textEditReco->setText(retStr);//显示出来
+}

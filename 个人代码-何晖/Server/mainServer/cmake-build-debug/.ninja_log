@@ -1,0 +1,26 @@
+# ninja log v6
+3449	34452	1724790121769287306	CMakeFiles/mainServer.dir/UserMgr.cpp.o	2e107f5e7c43bbcf
+10263	13652	1724427933936862456	CMakeFiles/mainServer.dir/message.grpc.pb.cc.o	981d02a80d48af3
+82	4853	1724780177793860663	CMakeFiles/mainServer.dir/MysqlDao.cpp.o	90c9a0fafcd9910f
+5	5048	1724427418657798387	CMakeFiles/mainServer.dir/AsioIOServicePool.cpp.o	34fe4bbc9c5647b6
+3423	37930	1724790121745243688	CMakeFiles/mainServer.dir/main.cpp.o	6a2b52804790f9cf
+33	4740	1724427528482608713	CMakeFiles/mainServer.dir/ConfigMgr.cpp.o	6bb88eea0c3c0400
+124	41021	1724773403046934524	CMakeFiles/mainServer.dir/ChatGrpcClient.cpp.o	e73f3c0d5b18e478
+11290	13054	1724427934963693184	CMakeFiles/mainServer.dir/message.pb.cc.o	c679504b23b3f50d
+3441	34773	1724790121761272767	CMakeFiles/mainServer.dir/CServer.cpp.o	8e80b4b01d1e816b
+125	36442	1724773403046934524	CMakeFiles/mainServer.dir/ChatServiceImpl.cpp.o	6973143f1eb2fab4
+21469	25848	1724780470279307762	mainServer	8fbdeeb8926415e0
+3442	34785	1724790121765280037	CMakeFiles/mainServer.dir/CSession.cpp.o	1e67999a13cf36b5
+40688	42040	1724773443611119895	CMakeFiles/mainServer.dir/MysqlMgr.cpp.o	23c696c3ff740f6a
+20	21469	1724780448831466512	CMakeFiles/mainServer.dir/LogicSystem.cpp.o	cc4cb2b55306b6c8
+3448	34471	1724790121769287306	CMakeFiles/mainServer.dir/StatusGrpcClient.cpp.o	4d29586f59e26f59
+3447	9086	1724790121769287306	CMakeFiles/mainServer.dir/RedisMgr.cpp.o	f11c4438a99acc9
+3443	10174	1724790121765280037	CMakeFiles/mainServer.dir/MsgNode.cpp.o	466e927140b62d67
+673	3212	1724790271176170901	CMakeFiles/mainServer.dir/MysqlMgr.cpp.o	23c696c3ff740f6a
+672	7189	1724790271176170901	CMakeFiles/mainServer.dir/MysqlDao.cpp.o	90c9a0fafcd9910f
+669	14556	1724790271176170901	CMakeFiles/mainServer.dir/ChatServiceImpl.cpp.o	6973143f1eb2fab4
+651	16439	1724790271156146987	CMakeFiles/mainServer.dir/ChatGrpcClient.cpp.o	e73f3c0d5b18e478
+670	18497	1724790271176170901	CMakeFiles/mainServer.dir/LogicSystem.cpp.o	cc4cb2b55306b6c8
+18497	23562	1724790289004261298	mainServer	8fbdeeb8926415e0
+19	6786	1724791195802097653	CMakeFiles/mainServer.dir/MysqlDao.cpp.o	90c9a0fafcd9910f
+6786	12289	1724791202569632551	mainServer	8fbdeeb8926415e0
