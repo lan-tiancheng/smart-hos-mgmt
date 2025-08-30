@@ -14,10 +14,10 @@ Server::Server(QObject *parent)
 
 void Server::startServer()
 {
-    if (!m_tcpServer->listen(QHostAddress::Any, 9090)) {
+    if (!m_tcpServer->listen(QHostAddress::Any, 8080)) {
         qDebug() << "Server could not start! Error:" << m_tcpServer->errorString();
     } else {
-        qDebug() << "Server started! Listening on port 8080...";
+        qDebug() << "Server started! Listening on port 9090...";
     }
 }
 

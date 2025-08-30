@@ -17,12 +17,14 @@ SOURCES += \
     main.cpp \
     client.cpp \
     src/asruploader.cpp \
-    src/authmanager.cpp
+    src/authmanager.cpp \
+    src/recorderprocess.cpp
 
 HEADERS += \
     client.h \
     src/asruploader.h \
-    src/authmanager.h
+    src/authmanager.h \
+    src/recorderprocess.h
 
 FORMS += \
     client.ui

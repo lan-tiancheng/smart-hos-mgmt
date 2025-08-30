@@ -46,7 +46,77 @@ def api_asr():
     except Exception as e:
         return jsonify(success=False, reason=str(e)), 500
 
-# 其余已有路由（登录/注册/体检提交）保持不变...
+# 新增：登录
+@app.route("/api/auth/login", methods=["POST"])
+def api_auth_login():
+    data = request.get_json(silent=True) or {}
+    username = str(data.get("username", "")).strip()
+    password = str(data.get("password", "")).strip()
+    if not username or not password:
+        return jsonify(success=False, reason="用户名或密码为空"), 400
+
+    user, err = auth_svc.login(username, password)
+    if err:
+        return jsonify(success=False, reason=err, remainingAttempts=4), 401
+
+    # 假定 User 实体包含 id 与 role
+    return jsonify(success=True, userId=user.id, userType=user.role)
+
+# 新增：注册
+@app.route("/api/auth/register", methods=["POST"])
+def api_auth_register():
+    data = request.get_json(silent=True) or {}
+    role = (data.get("userType") or data.get("role") or "").strip()
+    username = str(data.get("username", "")).strip()
+    password = str(data.get("password", "")).strip()
+    if role not in ("patient", "doctor"):
+        return jsonify(success=False, reason="userType 仅支持 patient/doctor"), 400
+    if not username or not password:
+        return jsonify(success=False, reason="用户名或密码为空"), 400
+
+    # 性别映射：兼容 '男'/'女' 与 'male'/'female'
+    gender_raw = str(data.get("gender", "")).strip()
+    if gender_raw in ("男", "male", "m", "M"):
+        gender_std = "male"
+    elif gender_raw in ("女", "female", "f", "F"):
+        gender_std = "female"
+    else:
+        gender_std = "male"  # 默认 male，避免下游空值
+
+    patient_info = None
+    doctor_info = None
+    if role == "patient":
+        patient_info = {
+            "name": username,
+            "gender": gender_std,
+            "id_card_number": "",
+            "phone_number": str(data.get("phone", "")),
+            "email": ""
+        }
+    else:
+        # 若有医生注册表单，可在这里按需映射
+        doctor_info = {
+            "work_id": "",
+            "name": username,
+            "department": "",
+            "personal_profile": "",
+            "photo_url": "",
+            "consultation_fee": "0.00",
+        }
+
+    uid, err = auth_svc.register_user(
+        username=username,
+        password=password,
+        role=role,
+        patient_info=patient_info,
+        doctor_info=doctor_info
+    )
+    if err:
+        return jsonify(success=False, reason=err), 400
+
+    return jsonify(success=True, userId=uid, userType=role)
+
+# 体检评估辅助
 def assess_bmi(height_cm, weight_kg):
     h = height_cm / 100.0
     bmi = weight_kg / (h*h) if h > 0 else 0

@@ -3,6 +3,9 @@
         <file>qml/Main.qml</file>
         <file>qml/LoginScreen.qml</file>
         <file>qml/HealthInputScreen.qml</file>
-        <file>qml/VoiceInputButton.qml</file>
+        <file>qml/VoiceTest.qml</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>qml/VoiceTest.qml</file>
     </qresource>
 </RCC>

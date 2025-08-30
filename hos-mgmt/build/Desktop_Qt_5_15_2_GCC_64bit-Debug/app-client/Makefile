@@ -55,18 +55,22 @@ OBJECTS_DIR   = ./
 SOURCES       = ../../../app-client/main.cpp \
 		../../../app-client/client.cpp \
 		../../../app-client/src/asruploader.cpp \
-		../../../app-client/src/authmanager.cpp qrc_client.cpp \
+		../../../app-client/src/authmanager.cpp \
+		../../../app-client/src/recorderprocess.cpp qrc_client.cpp \
 		moc_client.cpp \
 		moc_asruploader.cpp \
-		moc_authmanager.cpp
+		moc_authmanager.cpp \
+		moc_recorderprocess.cpp
 OBJECTS       = main.o \
 		client.o \
 		asruploader.o \
 		authmanager.o \
+		recorderprocess.o \
 		qrc_client.o \
 		moc_client.o \
 		moc_asruploader.o \
-		moc_authmanager.o
+		moc_authmanager.o \
+		moc_recorderprocess.o
 DIST          = ../../../app-client/qml/HealthInputScreen.qml \
 		../../../app-client/qml/LoginScreen.qml \
 		../../../app-client/qml/Main.qml \
@@ -254,10 +258,12 @@ DIST          = ../../../app-client/qml/HealthInputScreen.qml \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/features/lex.prf \
 		/home/lan/app-client/app-client.pro ../../../app-client/client.h \
 		../../../app-client/src/asruploader.h \
-		../../../app-client/src/authmanager.h ../../../app-client/main.cpp \
+		../../../app-client/src/authmanager.h \
+		../../../app-client/src/recorderprocess.h ../../../app-client/main.cpp \
 		../../../app-client/client.cpp \
 		../../../app-client/src/asruploader.cpp \
-		../../../app-client/src/authmanager.cpp
+		../../../app-client/src/authmanager.cpp \
+		../../../app-client/src/recorderprocess.cpp
 QMAKE_TARGET  = app-client
 DESTDIR       = 
 TARGET        = app-client
@@ -652,8 +658,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../app-client/client.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../app-client/client.h ../../../app-client/src/asruploader.h ../../../app-client/src/authmanager.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../app-client/main.cpp ../../../app-client/client.cpp ../../../app-client/src/asruploader.cpp ../../../app-client/src/authmanager.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../../app-client/client.h ../../../app-client/src/asruploader.h ../../../app-client/src/authmanager.h ../../../app-client/src/recorderprocess.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../../app-client/main.cpp ../../../app-client/client.cpp ../../../app-client/src/asruploader.cpp ../../../app-client/src/authmanager.cpp ../../../app-client/src/recorderprocess.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../app-client/client.ui $(DISTDIR)/
 
 
@@ -682,9 +688,10 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_client.cpp
 qrc_client.cpp: ../../../app-client/client.qrc \
 		/opt/Qt/5.15.2/gcc_64/bin/rcc \
+		../../../app-client/qml/VoiceTest.qml \
 		../../../app-client/qml/LoginScreen.qml \
+		../../../app-client/qml/VoiceTest.qml \
 		../../../app-client/qml/HealthInputScreen.qml \
-		../../../app-client/qml/VoiceInputButton.qml \
 		../../../app-client/qml/Main.qml
 	/opt/Qt/5.15.2/gcc_64/bin/rcc -name client ../../../app-client/client.qrc -o qrc_client.cpp
 
@@ -694,9 +701,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /opt/Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -std=gnu++1z -Wall -Wextra -dM -E -o moc_predefs.h /opt/Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_client.cpp moc_asruploader.cpp moc_authmanager.cpp
+compiler_moc_header_make_all: moc_client.cpp moc_asruploader.cpp moc_authmanager.cpp moc_recorderprocess.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_client.cpp moc_asruploader.cpp moc_authmanager.cpp
+	-$(DEL_FILE) moc_client.cpp moc_asruploader.cpp moc_authmanager.cpp moc_recorderprocess.cpp
 moc_client.cpp: ../../../app-client/client.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
@@ -962,6 +969,72 @@ moc_authmanager.cpp: ../../../app-client/src/authmanager.h \
 		moc_predefs.h \
 		/opt/Qt/5.15.2/gcc_64/bin/moc
 	/opt/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/lan/smart-hos-mgmt/hos-mgmt/build/Desktop_Qt_5_15_2_GCC_64bit-Debug/app-client/moc_predefs.h -I/opt/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/lan/smart-hos-mgmt/hos-mgmt/app-client -I/opt/Qt/5.15.2/gcc_64/include -I/opt/Qt/5.15.2/gcc_64/include/QtMultimedia -I/opt/Qt/5.15.2/gcc_64/include/QtQuick -I/opt/Qt/5.15.2/gcc_64/include/QtWidgets -I/opt/Qt/5.15.2/gcc_64/include/QtGui -I/opt/Qt/5.15.2/gcc_64/include/QtQmlModels -I/opt/Qt/5.15.2/gcc_64/include/QtQml -I/opt/Qt/5.15.2/gcc_64/include/QtNetwork -I/opt/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../../../app-client/src/authmanager.h -o moc_authmanager.cpp
+
+moc_recorderprocess.cpp: ../../../app-client/src/recorderprocess.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringliteral.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringview.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QProcess \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qprocess.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QUrl \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		moc_predefs.h \
+		/opt/Qt/5.15.2/gcc_64/bin/moc
+	/opt/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/lan/smart-hos-mgmt/hos-mgmt/build/Desktop_Qt_5_15_2_GCC_64bit-Debug/app-client/moc_predefs.h -I/opt/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/lan/smart-hos-mgmt/hos-mgmt/app-client -I/opt/Qt/5.15.2/gcc_64/include -I/opt/Qt/5.15.2/gcc_64/include/QtMultimedia -I/opt/Qt/5.15.2/gcc_64/include/QtQuick -I/opt/Qt/5.15.2/gcc_64/include/QtWidgets -I/opt/Qt/5.15.2/gcc_64/include/QtGui -I/opt/Qt/5.15.2/gcc_64/include/QtQmlModels -I/opt/Qt/5.15.2/gcc_64/include/QtQml -I/opt/Qt/5.15.2/gcc_64/include/QtNetwork -I/opt/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../../../app-client/src/recorderprocess.h -o moc_recorderprocess.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1403,6 +1476,76 @@ authmanager.o: ../../../app-client/src/authmanager.cpp ../../../app-client/src/a
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbasictimer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o authmanager.o ../../../app-client/src/authmanager.cpp
 
+recorderprocess.o: ../../../app-client/src/recorderprocess.cpp ../../../app-client/src/recorderprocess.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringliteral.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringview.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QProcess \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qprocess.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QUrl \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QFileInfo \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/QStandardPaths \
+		/opt/Qt/5.15.2/gcc_64/include/QtCore/qstandardpaths.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o recorderprocess.o ../../../app-client/src/recorderprocess.cpp
+
 qrc_client.o: qrc_client.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_client.o qrc_client.cpp
 
@@ -1414,6 +1557,9 @@ moc_asruploader.o: moc_asruploader.cpp
 
 moc_authmanager.o: moc_authmanager.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_authmanager.o moc_authmanager.cpp
+
+moc_recorderprocess.o: moc_recorderprocess.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_recorderprocess.o moc_recorderprocess.cpp
 
 ####### Install
 

@@ -24,12 +24,6 @@ Item {
                 validator: DoubleValidator { bottom: 50; top: 250 }
                 Layout.fillWidth: true
             }
-            VoiceInputButton {
-                onRecognized: function(text) {
-                    var n = parseFloat(text.replace(/[^\d.]/g, ""))
-                    if (!isNaN(n)) heightField.text = Math.round(n * 10) / 10
-                }
-            }
         }
 
         RowLayout {
@@ -39,12 +33,6 @@ Item {
                 placeholderText: "体重 (kg)"
                 validator: DoubleValidator { bottom: 10; top: 400 }
                 Layout.fillWidth: true
-            }
-            VoiceInputButton {
-                onRecognized: function(text) {
-                    var n = parseFloat(text.replace(/[^\d.]/g, ""))
-                    if (!isNaN(n)) weightField.text = Math.round(n * 10) / 10
-                }
             }
         }
 
@@ -56,12 +44,6 @@ Item {
                 validator: IntValidator { bottom: 100; top: 20000 }
                 Layout.fillWidth: true
             }
-            VoiceInputButton {
-                onRecognized: function(text) {
-                    var n = parseInt(text.replace(/[^\d]/g, ""))
-                    if (!isNaN(n)) lungField.text = n
-                }
-            }
         }
 
         RowLayout {
@@ -70,15 +52,6 @@ Item {
                 id: bpField
                 placeholderText: "血压 (mmHg)，例 120/80"
                 Layout.fillWidth: true
-            }
-            VoiceInputButton {
-                onRecognized: function(text) {
-                    // 尝试从语音提取 “收缩压/舒张压”
-                    var nums = text.match(/\d{2,3}/g)
-                    if (nums && nums.length >= 2) {
-                        bpField.text = nums[0] + "/" + nums[1]
-                    }
-                }
             }
         }
 

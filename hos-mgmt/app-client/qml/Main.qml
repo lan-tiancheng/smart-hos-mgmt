@@ -10,16 +10,22 @@ ApplicationWindow {
     height: 600
     title: "智慧医疗系统"
 
-    // 根据认证状态与用户类型切换界面：
-    // - 未登录：显示登录/注册界面
-    // - 已登录且为病人：显示体检数据提交
-    // - 已登录且为医生：显示占位信息（可后续扩展）
+    // 打开为 true 时直接进入语音测试页；测完改回 false
+    property bool debugVoiceTest: true
+
     Loader {
         id: router
         anchors.fill: parent
-        sourceComponent: !authManager.isAuthenticated
-                         ? loginView
-                         : (authManager.currentUserType === AuthManager.Patient ? patientView : doctorView)
+        sourceComponent: debugVoiceTest
+                         ? voiceTestView
+                         : (!authManager.isAuthenticated
+                             ? loginView
+                             : (authManager.currentUserType === AuthManager.Patient ? patientView : doctorView))
+    }
+
+    Component {
+        id: voiceTestView
+        VoiceTest { anchors.fill: parent }
     }
 
     Component {
