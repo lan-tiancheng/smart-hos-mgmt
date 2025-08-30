@@ -5,7 +5,5 @@
         <file>qml/HealthInputScreen.qml</file>
         <file>qml/VoiceTest.qml</file>
     </qresource>
-    <qresource prefix="/">
-        <file>qml/VoiceTest.qml</file>
-    </qresource>
+    <qresource prefix="/"/>
 </RCC>

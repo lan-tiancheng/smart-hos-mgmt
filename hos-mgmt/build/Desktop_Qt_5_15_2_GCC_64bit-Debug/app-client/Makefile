@@ -688,7 +688,6 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_client.cpp
 qrc_client.cpp: ../../../app-client/client.qrc \
 		/opt/Qt/5.15.2/gcc_64/bin/rcc \
-		../../../app-client/qml/VoiceTest.qml \
 		../../../app-client/qml/LoginScreen.qml \
 		../../../app-client/qml/VoiceTest.qml \
 		../../../app-client/qml/HealthInputScreen.qml \

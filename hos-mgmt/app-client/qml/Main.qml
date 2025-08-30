@@ -9,23 +9,16 @@ ApplicationWindow {
     width: 800
     height: 600
     title: "智慧医疗系统"
-
-    // 打开为 true 时直接进入语音测试页；测完改回 false
-    property bool debugVoiceTest: true
-
+    // 根据认证状态与用户类型切换界面：
+    // - 未登录：显示登录/注册界面
+    // - 已登录且为病人：显示体检数据提交
+    // - 已登录且为医生：显示占位信息（可后续扩展）
     Loader {
         id: router
         anchors.fill: parent
-        sourceComponent: debugVoiceTest
-                         ? voiceTestView
-                         : (!authManager.isAuthenticated
-                             ? loginView
-                             : (authManager.currentUserType === AuthManager.Patient ? patientView : doctorView))
-    }
-
-    Component {
-        id: voiceTestView
-        VoiceTest { anchors.fill: parent }
+        sourceComponent: !authManager.isAuthenticated
+                         ? loginView
+                         : (authManager.currentUserType === AuthManager.Patient ? patientView : doctorView)
     }
 
     Component {
@@ -47,7 +40,8 @@ ApplicationWindow {
                 anchors.centerIn: parent
                 spacing: 12
                 Label { text: "医生用户已登录"; font.pixelSize: 22 }
-                Label { text: "医生端主界面功能待接入"; color: "#666666" }
+                Label
+                 { text: "医生端主界面功能待接入"; color: "#666666" }
             }
         }
     }
