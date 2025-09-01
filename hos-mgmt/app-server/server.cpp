@@ -1,5 +1,6 @@
 #include "server.h"
-#include "qtcpsocket.h"
+#include <QTcpServer>
+#include <QTcpSocket>
 #include <QDebug>
 
 Server::Server(QObject *parent)

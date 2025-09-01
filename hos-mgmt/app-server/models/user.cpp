@@ -1,49 +1,54 @@
 #include "user.h"
 
-User::User() {}
+User::User()
+    : m_age(0), m_gender(""), m_phonenumber(""), m_address(""), m_id(""), m_username(""), m_passwordHash(""), m_userType(Patient) {}
 
 User::~User() {}
 
-// ========================= age =========================
 int User::age() const { return m_age; }
 void User::setAge(const int age) { m_age = age; }
 
-// ========================= gender =========================
 QString User::gender() const { return m_gender; }
-void User::setGender(const QString &gender) { m_gender = gender; }
+void User::setGender(const QString& gender) { m_gender = gender; }
 
-// ========================= phone number =========================
 QString User::phonenumber() const { return m_phonenumber; }
-void User::setPhonenumber(const QString &phonenumber) { m_phonenumber = phonenumber; }
+void User::setPhonenumber(const QString& phonenumber) { m_phonenumber = phonenumber; }
 
-// ========================= address =========================
 QString User::address() const { return m_address; }
-void User::setAddress(const QString &address) { m_address = address; }
+void User::setAddress(const QString& address) { m_address = address; }
 
 QString User::id() const { return m_id; }
-void User::setId(const QString &id) { m_id = id; }
+void User::setId(const QString& id) { m_id = id; }
 
 QString User::username() const { return m_username; }
-void User::setUsername(const QString &username) { m_username = username; }
+void User::setUsername(const QString& username) { m_username = username; }
 
 QString User::passwordHash() const { return m_passwordHash; }
-void User::setPasswordHash(const QString &hash) { m_passwordHash = hash; }
+void User::setPasswordHash(const QString& hash) { m_passwordHash = hash; }
 
 User::UserType User::userType() const { return m_userType; }
-void User::setUserType(const UserType &type) { m_userType = type; }
+void User::setUserType(const UserType& type) { m_userType = type; }
 
 QJsonObject User::toJson() const {
     QJsonObject json;
     json["id"] = m_id;
     json["username"] = m_username;
     json["passwordHash"] = m_passwordHash;
-    json["userType"] = (int)m_userType;
+    json["age"] = m_age;
+    json["gender"] = m_gender;
+    json["phonenumber"] = m_phonenumber;
+    json["address"] = m_address;
+    json["userType"] = static_cast<int>(m_userType);
     return json;
 }
 
-void User::fromJson(const QJsonObject &json) {
-    if (json.contains("id")) m_id = json["id"].toString();
-    if (json.contains("username")) m_username = json["username"].toString();
-    if (json.contains("passwordHash")) m_passwordHash = json["passwordHash"].toString();
-    if (json.contains("userType")) m_userType = (UserType)json["userType"].toInt();
+void User::fromJson(const QJsonObject& json) {
+    m_id = json["id"].toString();
+    m_username = json["username"].toString();
+    m_passwordHash = json["passwordHash"].toString();
+    m_age = json["age"].toInt();
+    m_gender = json["gender"].toString();
+    m_phonenumber = json["phonenumber"].toString();
+    m_address = json["address"].toString();
+    m_userType = static_cast<UserType>(json["userType"].toInt());
 }

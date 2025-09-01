@@ -77,6 +77,11 @@ Item {
                 text: "清空"
                 onClicked: { heightField.text = ""; weightField.text=""; lungField.text=""; bpField.text=""; resultLabel.text="" }
             }
+            Button {
+                text: "返回"
+                onClicked: { mainStackView.pop() }
+            }
+
         }
     }
 

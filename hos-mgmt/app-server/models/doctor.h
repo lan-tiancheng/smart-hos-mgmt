@@ -1,59 +1,47 @@
-#ifndef DOCTOR_H
-#define DOCTOR_H
-
-#include "user.h"
+#pragma once
+#include <QString>
 #include <QDate>
 #include <QTime>
-//医生属性：部门 工作日期 工作时间
+#include <QJsonObject>
+#include "user.h"
 
 class DoctorWorkingHours {
-private:
-    QTime startTime;
-    QTime endTime;
-
 public:
-    DoctorWorkingHours(const QTime &start, const QTime &end)
-        : startTime(start), endTime(end) {}
+    DoctorWorkingHours(const QTime& start = QTime(9, 0), const QTime& end = QTime(17, 0));
+    QTime startTime() const;
+    QTime endTime() const;
 
-    // 获取工作开始时间
-    QTime getStartTime() const ;
+    void setStartTime(const QTime&);
+    void setEndTime(const QTime&);
+    int workingHours() const;
 
-    // 获取工作结束时间
-    QTime getEndTime() const ;
-
-    // 设置工作开始时间
-    void setStartTime(const QTime &start) ;
-
-    // 设置工作结束时间
-    void setEndTime(const QTime &end) ;
-
-    // 计算工作时长
-    int getWorkingHours() const ;
+private:
+    QTime m_startTime;
+    QTime m_endTime;
 };
 
-
-class Doctor : public User
-{
+class Doctor : public User {
 public:
     Doctor();
-
-    // 医生特有属性
     QString department() const;
-    void setDepartment(const QString &department);
+    void setDepartment(const QString&);
 
     QDate workDate() const;
-    void setWorkDate(const QDate &date);
+    void setWorkDate(const QDate&);
 
     DoctorWorkingHours workTime() const;
-    void setWorkTime(const DoctorWorkingHours &workHours);
-    // 覆盖基类方法以包含新属性
+    void setWorkTime(const DoctorWorkingHours&);
+
     QJsonObject toJson() const override;
-    void fromJson(const QJsonObject &json) override;
+    void fromJson(const QJsonObject&) override;
+
+    // 可选：数据库兼容 getter/setter
+    QString id() const;
+    void setId(const QString&);
 
 private:
+    QString m_id;
     QString m_department;
     QDate m_workDate;
     DoctorWorkingHours m_worktime;
 };
-
-#endif // DOCTOR_H

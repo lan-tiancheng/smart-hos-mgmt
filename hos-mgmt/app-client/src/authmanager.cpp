@@ -1,9 +1,12 @@
 #include "authmanager.h"
-#include <QJsonDocument>
-#include <QUrl>
+#include "databasemanager.h"
+#include "qjsondocument.h"
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QVariant>
 #include <QDebug>
-#include <QNetworkRequest>
 #include <QTimer>
+#include <QJSValue>
 
 // ------------------------- 构造与配置 -------------------------
 
@@ -22,38 +25,40 @@ void AuthManager::setApiBase(const QString &url)
     qDebug() << "AuthManager: API base set to" << m_apiBase;
 }
 
-// ------------------------- HTTP（暴露给 QML） -------------------------
-
-void AuthManager::requestLogin(const QString &username, const QString &password)
-{
-    if (m_apiBase.isEmpty()) {
-        qWarning() << "AuthManager: API base URL is not set!";
-        emit loginFailed(QStringLiteral("客户端错误：API 基础地址未设置"));
-        return;
+// --- 根据职业获取数据库连接 ---
+QSqlDatabase AuthManager::getProfessionDatabase(const QString& profession) {
+    QString dbName = QString("%1.db").arg(profession.toLower());
+    QString connName = QString("%1_connection").arg(profession.toLower());
+    QSqlDatabase db;
+    if (QSqlDatabase::contains(connName)) {
+        db = QSqlDatabase::database(connName);
+    } else {
+        db = QSqlDatabase::addDatabase("QSQLITE", connName);
+        db.setDatabaseName(dbName);
+        db.open();
+        // 自动建表（仅首次创建数据库时）
+        QSqlQuery q(db);
+        q.exec(R"(
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT,
+                gender TEXT,
+                phone TEXT,
+                address TEXT,
+                age INTEGER
+            )
+        )");
     }
-
-    QJsonObject obj;
-    obj["type"] = "login";
-    obj["username"] = username;
-    obj["password"] = password;
-
-    const QString path = "/api/auth/login";
-    qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpLoginFinished(reply); }, 15000);
+    return db;
 }
 
-void AuthManager::requestRegister(const QString &userType, const QString &username, const QString &password,
+void AuthManager::requestRegister(const QString &profession, const QString &username, const QString &password,
                                   const QString &phone, const QString &address, int age, const QString &gender)
 {
-    if (m_apiBase.isEmpty()) {
-        qWarning() << "AuthManager: API base URL is not set!";
-        emit registerFailed(QStringLiteral("客户端错误：API 基础地址未设置"));
-        return;
-    }
-
+    // 构造 JSON 参数
     QJsonObject obj;
-    obj["type"] = "register";
-    obj["userType"] = userType;
+    obj["userType"] = profession; // "patient" 或 "doctor"
     obj["username"] = username;
     obj["password"] = password;
     obj["phone"] = phone;
@@ -61,34 +66,110 @@ void AuthManager::requestRegister(const QString &userType, const QString &userna
     obj["age"] = age;
     obj["gender"] = gender;
 
-    const QString path = "/api/auth/register";
-    qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpRegisterFinished(reply); }, 15000);
+    // 发送 HTTP 请求到后端注册接口
+    QNetworkRequest request(QUrl(m_apiBase + "/api/auth/register"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onHttpRegisterFinished(reply);
+    });
+}
+
+void AuthManager::requestLogin(const QString &profession, const QString &username, const QString &password)
+{
+    QJsonObject obj;
+    obj["userType"] = profession;
+    obj["username"] = username;
+    obj["password"] = password;
+
+    QNetworkRequest request(QUrl(m_apiBase + "/api/auth/login"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onHttpLoginFinished(reply);
+    });
 }
 
 void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl, const QString &bp)
 {
-    if (!m_isAuthenticated || m_userId <= 0) {
-        emit healthSubmitFailed(QStringLiteral("未登录或 userId 无效"));
-        return;
-    }
-    if (m_apiBase.isEmpty()) {
-        qWarning() << "AuthManager: API base URL is not set!";
-        emit healthSubmitFailed(QStringLiteral("客户端错误：API 基础地址未设置"));
-        return;
-    }
-
     QJsonObject obj;
-    obj["type"] = "health_submit";
     obj["userId"] = m_userId;
     obj["height"] = heightCm;
     obj["weight"] = weightKg;
     obj["lung"] = lungMl;
     obj["bp"] = bp;
 
-    const QString path = "/api/health/submit";
-    qDebug() << "POST" << (m_apiBase + path) << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
-    postHttpJson(path, obj, [this](QNetworkReply *reply) { onHttpHealthSubmitFinished(reply); }, 15000);
+    QNetworkRequest request(QUrl(m_apiBase + "/api/health/submit"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        onHttpHealthSubmitFinished(reply);
+    });
+}
+
+void AuthManager::getPatientInfo(QJSValue callback)
+{
+    QUrl url(m_apiBase + "/api/patient/info?userId=" + QString::number(m_userId) + "&profession=patient");
+    QNetworkRequest request(url);
+
+    QNetworkReply* reply = m_nam.get(request);
+    connect(reply, &QNetworkReply::finished, this, [reply, callback]() mutable {
+        QByteArray data = reply->readAll();
+        reply->deleteLater();
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        if (doc.isObject()) {
+            QJsonObject obj = doc.object();
+            QJsonObject infoObj = obj.value("info").toObject();  // 关键修正
+            QJSValueList args;
+            args << QJSValue(infoObj.value("username").toString())
+                 << QJSValue(infoObj.value("phone").toString())
+                 << QJSValue(infoObj.value("address").toString())
+                 << QJSValue(QString::number(infoObj.value("age").toInt()))
+                 << QJSValue(infoObj.value("gender").toString());
+            if (callback.isCallable())
+                callback.call(args);
+        } else {
+            QJSValueList emptyArgs;
+            if (callback.isCallable())
+                callback.call(emptyArgs);
+        }
+    });
+}
+
+
+
+void AuthManager::updatePatientInfo(const QString &username,
+                                    const QString &phone,
+                                    const QString &address,
+                                    const QString &age,
+                                    const QString &gender,
+                                    QJSValue callback)
+{
+    QJsonObject obj;
+    obj["userId"] = m_userId;
+    obj["profession"] = "patient"; // 必须加上
+    obj["username"] = username;
+    obj["phone"] = phone;
+    obj["address"] = address;
+    obj["age"] = age.toInt();
+    obj["gender"] = gender;
+
+    QNetworkRequest request(QUrl(m_apiBase + "/api/patient/update"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
+    connect(reply, &QNetworkReply::finished, this, [reply, callback]()mutable {
+        QByteArray data = reply->readAll();
+        reply->deleteLater();
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        QJsonObject resp = doc.object();
+        bool success = resp.value("success").toBool();
+        if (callback.isCallable())
+            callback.call(QJSValueList() << QJSValue(success));
+    });
 }
 
 // ------------------------- TCP/HTTP 公共函数 -------------------------

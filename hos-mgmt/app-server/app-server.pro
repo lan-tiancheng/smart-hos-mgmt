@@ -2,7 +2,8 @@ QT       += core\
     core gui \
     network \
     qml \
-    quick
+    quick\
+    sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,7 +18,7 @@ INCLUDEPATH += /usr/local/include
 # Redis++ 库文件路径
 LIBS += -L/usr/local/lib -lredis++ -lhiredis
 SOURCES += \
-    databasemanager.cpp \
+    DatabaseManager.cpp \
     main.cpp \
     models/appointment.cpp \
     models/doctor.cpp \
@@ -26,15 +27,14 @@ SOURCES += \
     server.cpp
 
 HEADERS += \
-    databasemanager.h \
+    DatabaseManager.h \
     models/appointment.h \
     models/doctor.h \
     models/patient.h \
     models/user.h \
     server.h
 
-FORMS += \
-    server.ui
+FORMS +=
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -44,11 +44,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES +=
 
 DISTFILES += \
+    app.py \
     asr_service.py \
     domain/_init_.py \
     domain/entities.py \
-    infra/_inti_.py \
-    infra/redis_store.py \
-    repositories.py \
-    server.py \
-    services.py
+    infra/auth_service.py \
+    infra/sqlite_store.py \
+    services/auth_service.py

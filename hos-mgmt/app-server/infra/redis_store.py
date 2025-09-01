@@ -20,31 +20,28 @@ class TxnError(Exception):
 def atomic_create_with_uniques(
     r: redis.Redis,
     id_counter_key: str,
-    unique_checks: Tuple[Tuple[str, str], ...],  # (index_key, index_value) -> ensure not exists
+    unique_checks: Tuple[Tuple[str, str], ...],
     write_hash_key_fn: Callable[[int], str],
     write_hash_mapping: Dict[str, Any],
     set_unique_index_fns: Tuple[Callable[[int], Tuple[str, str]], ...] = (),
+    max_retries: int = 5,   # 防止无限卡死
 ) -> int:
-    """
-    - 先 WATCH 所有唯一索引键，确保不存在
-    - INCR id 生成新 ID
-    - 写入主体 hash
-    - 建立唯一索引（如 username:{name} -> user_id）
-    """
     watch_keys = [k for (k, _) in unique_checks]
-    with r.pipeline() as pipe:
-        while True:
+    for attempt in range(max_retries):
+        with r.pipeline() as pipe:
             try:
                 if watch_keys:
                     pipe.watch(*watch_keys)
+
                 # 唯一性检查
                 for key, _ in unique_checks:
                     if r.exists(key):
                         pipe.unwatch()
                         raise TxnError(f"Unique key already exists: {key}")
 
+                # 生成新 ID
                 pipe.multi()
-                new_id = pipe.incr(id_counter_key)
+                pipe.incr(id_counter_key)
                 pipe.execute()
                 new_id = int(r.get(id_counter_key))
 
@@ -52,12 +49,14 @@ def atomic_create_with_uniques(
                 hk = write_hash_key_fn(new_id)
                 r.hset(hk, mapping=write_hash_mapping)
 
-                # 建唯一索引
+                # 写唯一索引
                 for fn in set_unique_index_fns:
                     idx_key, idx_val = fn(new_id)
-                    # 通常 value=新ID
                     r.set(idx_key, idx_val)
 
                 return new_id
+
             except redis.WatchError:
                 continue
+
+    raise TxnError("Transaction failed after max retries")

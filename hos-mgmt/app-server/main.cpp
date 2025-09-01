@@ -1,4 +1,4 @@
-#include "databasemanager.h"
+#include "DatabaseManager.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include "models/appointment.h"

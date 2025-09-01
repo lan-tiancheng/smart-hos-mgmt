@@ -2,6 +2,7 @@
 #include <QFileInfo>
 #include <QStandardPaths>
 
+
 RecorderProcess::RecorderProcess(QObject* parent) : QObject(parent) {
     connectProcess();
 }
