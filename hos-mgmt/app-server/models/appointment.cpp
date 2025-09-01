@@ -20,6 +20,9 @@ void Appointment::setAppointmentDateTime(const QDateTime &dateTime) { m_appointm
 Appointment::AppointmentStatus Appointment::status() const { return m_status; }
 void Appointment::setStatus(const AppointmentStatus &status) { m_status = status; }
 
+QString Appointment::info() const { return m_info; }
+void Appointment::setInfo(const QString& info) { m_info = info; }
+
 QJsonObject Appointment::toJson() const
 {
     QJsonObject json;
@@ -39,3 +42,4 @@ void Appointment::fromJson(const QJsonObject &json)
     if (json.contains("appointment_date_time")) m_appointmentDateTime = QDateTime::fromString(json["appointment_date_time"].toString(), Qt::ISODate);
     if (json.contains("status")) m_status = (AppointmentStatus)json["status"].toInt();
 }
+

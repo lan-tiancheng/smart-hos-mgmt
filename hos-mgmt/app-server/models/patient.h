@@ -1,85 +1,59 @@
-#ifndef PATIENT_H
-#define PATIENT_H
-
-#include "user.h"
+#pragma once
 #include <QString>
-#include <QDate>
 #include <QJsonObject>
+#include "user.h"
 
 class History {
-private:
-    QString description;  // 记录的描述
-    QDate date;           // 记录的日期
-
 public:
-    History() = default;  // 默认构造函数
+    History();
 
-    History(const QString &desc, const QDate &d)
-        : description(desc), date(d) {}
+    QString description() const;
+    void setDescription(const QString&);
 
-    // 获取描述
-    QString getDescription() const ;
+    QDate date() const;
+    void setDate(const QDate&);
 
-    // 设置描述
-    void setDescription(const QString &desc) ;
-
-    // 获取日期
-    QDate getDate() const ;
-
-    // 设置日期
-    void setDate(const QDate &d) ;
-    // 将History对象转化为QJsonObject
-    QJsonObject toJson() const ;
-    // 从QJsonObject还原History对象
-    void fromJson(const QJsonObject &json) ;
-
+    QJsonObject toJson() const;
+    void fromJson(const QJsonObject&);
+private:
+    QString m_description;
+    QDate m_date;
 };
 
 class Patient : public User {
 public:
     Patient();
 
-    // 获取患者的病历历史
-    History medicalHistory() const ;
+    History medicalHistory() const;
+    void setMedicalHistory(const History&);
 
-    // 设置患者的病历历史
-    void setMedicalHistory(const History &history) ;
+    QJsonObject toJson() const override;
+    void fromJson(const QJsonObject&) override;
+    bool isHealthy() const;
 
-    // 覆盖基类方法以包含新属性（将患者信息转换为JSON）
-    QJsonObject toJson() const override ;
-
-    // 从JSON恢复患者信息
-    void fromJson(const QJsonObject &json) override;
-
-    // 患者基本信息输入 实现健康评估界面
-    void setHeight(double h) { height = h; }
-    double getHeight() const { return height; }
-
-    void setWeight(double w) { weight = w; }
-    double getWeight() const { return weight; }
-
-    void setLungCapacity(double lc) { lungCapacity = lc; }
-    double getLungCapacity() const { return lungCapacity; }
-    void setHeartRate(int hr) { heartRate = hr; }
-    int getHeartRate() const { return heartRate; }
-
-    void setBloodPressure(int systolic, int diastolic) {
-        systolicBP = systolic;
-        diastolicBP = diastolic;
-    }
-    int getSystolicBP() const { return systolicBP; }
-    int getDiastolicBP() const { return diastolicBP; }
-    bool isHealthy() const;// 判断病人是否健康
+    //数据库兼容 getter/setter
+    QString id() const;
+    void setId(const QString&);
+    double height() const;
+    void setHeight(double);
+    double weight() const;
+    void setWeight(double);
+    int lungCapacity() const;
+    void setLungCapacity(int);
+    int heartRate() const;
+    void setHeartRate(int);
+    int systolicBP() const;
+    void setSystolicBP(int);
+    int diastolicBP() const;
+    void setDiastolicBP(int);
 
 private:
-    // 患者健康信息
-    double height;       // 身高，单位米
-    double weight;       // 体重，单位公斤
-    double lungCapacity; // 肺活量，单位毫升
-    int heartRate;       // 心率（次/分钟）
-    int systolicBP;      // 收缩压（mmHg）
-    int diastolicBP;     // 舒张压（mmHg）
-    History m_medicalHistory;  // 保存患者的病历历史
+    QString m_id;
+    History m_medicalHistory;
+    double m_height = 0.0;
+    double m_weight = 0.0;
+    int m_lungCapacity = 0;
+    int m_heartRate = 0;
+    int m_systolicBP = 0;
+    int m_diastolicBP = 0;
 };
-
-#endif // PATIENT_H

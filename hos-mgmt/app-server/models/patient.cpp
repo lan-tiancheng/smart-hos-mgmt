@@ -1,94 +1,74 @@
 #include "patient.h"
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QDate>
 
-// ======================= History 类实现 =======================
-// 获取描述
-QString History::getDescription() const {
-    return description;
-}
+History::History() : m_description(""), m_date(QDate::currentDate()) {}
+QString History::description() const { return m_description; }
+void History::setDescription(const QString& desc) { m_description = desc; }
 
-// 设置描述
-void History::setDescription(const QString &desc) {
-    description = desc;
-}
+QDate History::date() const { return m_date; }
+void History::setDate(const QDate& d) { m_date = d; }
 
-// 获取日期
-QDate History::getDate() const {
-    return date;
-}
-
-// 设置日期
-void History::setDate(const QDate &d) {
-    date = d;
-}
-
-// 将History对象转化为QJsonObject
 QJsonObject History::toJson() const {
-    QJsonObject jsonObj;
-    jsonObj["description"] = description;
-    jsonObj["date"] = date.toString();  // 使用QString格式化日期
-    return jsonObj;
+    QJsonObject json;
+    json["description"] = m_description;
+    json["date"] = m_date.toString(Qt::ISODate);
+    return json;
 }
 
-// 从QJsonObject还原History对象
-void History::fromJson(const QJsonObject &json) {
-    description = json["description"].toString();
-    date = QDate::fromString(json["date"].toString());
+void History::fromJson(const QJsonObject& json) {
+    m_description = json["description"].toString();
+    m_date = QDate::fromString(json["date"].toString(), Qt::ISODate);
 }
 
-// ======================= Patient 类实现 =======================
+Patient::Patient() : User() {}
 
-Patient::Patient() {
-    // 默认的患者病历历史为空
-    m_medicalHistory = History();
-}
+History Patient::medicalHistory() const { return m_medicalHistory; }
+void Patient::setMedicalHistory(const History& h) { m_medicalHistory = h; }
 
-// 获取患者的病历历史
-History Patient::medicalHistory() const {
-    return m_medicalHistory;
-}
+QString Patient::id() const { return m_id; }
+void Patient::setId(const QString& id) { m_id = id; }
+double Patient::height() const { return m_height; }
+void Patient::setHeight(double h) { m_height = h; }
+double Patient::weight() const { return m_weight; }
+void Patient::setWeight(double w) { m_weight = w; }
+int Patient::lungCapacity() const { return m_lungCapacity; }
+void Patient::setLungCapacity(int l) { m_lungCapacity = l; }
+int Patient::heartRate() const { return m_heartRate; }
+void Patient::setHeartRate(int hr) { m_heartRate = hr; }
+int Patient::systolicBP() const { return m_systolicBP; }
+void Patient::setSystolicBP(int sbp) { m_systolicBP = sbp; }
+int Patient::diastolicBP() const { return m_diastolicBP; }
+void Patient::setDiastolicBP(int dbp) { m_diastolicBP = dbp; }
 
-// 设置患者的病历历史
-void Patient::setMedicalHistory(const History &history) {
-    m_medicalHistory = history;
-}
-
-// 覆盖基类方法以包含新属性（将患者信息转换为JSON）
 QJsonObject Patient::toJson() const {
-    QJsonObject jsonObj = User::toJson();  // 调用基类的toJson方法
-
-    // 添加患者的病历历史到JSON
-    jsonObj["medicalHistory"] = m_medicalHistory.toJson();
-
-    return jsonObj;
+    QJsonObject json = User::toJson();
+    json["id"] = m_id;
+    json["medicalHistory"] = m_medicalHistory.toJson();
+    json["height"] = m_height;
+    json["weight"] = m_weight;
+    json["lungCapacity"] = m_lungCapacity;
+    json["heartRate"] = m_heartRate;
+    json["systolicBP"] = m_systolicBP;
+    json["diastolicBP"] = m_diastolicBP;
+    return json;
 }
-
-// 从JSON恢复患者信息
-void Patient::fromJson(const QJsonObject &json) {
-    User::fromJson(json);  // 调用基类的fromJson方法
-
-    // 恢复病历历史
+void Patient::fromJson(const QJsonObject& json) {
+    User::fromJson(json);
+    m_id = json["id"].toString();
     m_medicalHistory.fromJson(json["medicalHistory"].toObject());
+    m_height = json["height"].toDouble();
+    m_weight = json["weight"].toDouble();
+    m_lungCapacity = json["lungCapacity"].toInt();
+    m_heartRate = json["heartRate"].toInt();
+    m_systolicBP = json["systolicBP"].toInt();
+    m_diastolicBP = json["diastolicBP"].toInt();
 }
 
-// 基础判断患者是否健康
 bool Patient::isHealthy() const {
-    // 优化 分别讨论男女
-    // BMI 健康范围 18.5~24.9
-    double bmi = getWeight() / (height * height);
+    double bmi = m_weight / ((m_height / 100.0) * (m_height / 100.0));
     bool bmiHealthy = (bmi >= 18.5 && bmi <= 24.9);
-
-    // 肺活量 > 2000 ml
-    bool lungHealthy = (lungCapacity >= 2000);
-
-    // 心率 60~100 bpm
-    bool heartRateHealthy = (heartRate >= 60 && heartRate <= 100);
-
-    // 血压正常：收缩压 90~120 mmHg，舒张压 60~80 mmHg
-    bool bpHealthy = (systolicBP >= 90 && systolicBP <= 120 &&
-                      diastolicBP >= 60 && diastolicBP <= 80);
-
+    bool lungHealthy = (m_lungCapacity >= 2000);
+    bool heartRateHealthy = (m_heartRate >= 60 && m_heartRate <= 100);
+    bool bpHealthy = (m_systolicBP >= 90 && m_systolicBP <= 120 &&
+                      m_diastolicBP >= 60 && m_diastolicBP <= 80);
     return bmiHealthy && lungHealthy && heartRateHealthy && bpHealthy;
 }

@@ -3,7 +3,8 @@ QT       += core gui \
     qml\
     multimedia \
     quick multimedia \
-    core gui quick qml multimedia network
+    core gui quick qml multimedia network \
+    sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,12 +19,14 @@ SOURCES += \
     client.cpp \
     src/asruploader.cpp \
     src/authmanager.cpp \
+    src/databasemanager.cpp \
     src/recorderprocess.cpp
 
 HEADERS += \
     client.h \
     src/asruploader.h \
     src/authmanager.h \
+    src/databasemanager.h \
     src/recorderprocess.h
 
 FORMS += \
@@ -38,7 +41,13 @@ RESOURCES += \
     client.qrc
 
 DISTFILES += \
+    qml/AppointmentScreen.qml \
+    qml/DoctorHomeScreen.qml \
+    qml/DoctorListScreen.qml \
+    qml/DrugSearchScreen.qml \
     qml/HealthInputScreen.qml \
     qml/LoginScreen.qml \
     qml/Main.qml \
+    qml/PatientHomeScreen.qml \
+    qml/PatientProfileScreen.qml \
     qml/components/VoiceInputButton.qml

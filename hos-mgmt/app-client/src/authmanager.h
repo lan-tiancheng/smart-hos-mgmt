@@ -6,6 +6,9 @@
 #include <QNetworkReply>
 #include <QTcpSocket>
 #include <QJsonObject>
+#include <QJSValue>
+#include <QSqlDatabase>
+#include "databasemanager.h"
 
 class AuthManager : public QObject
 {
@@ -24,17 +27,38 @@ public:
     Q_INVOKABLE void setApiBase(const QString &url);
 
     // 暴露给 QML 的 HTTP 版本
-    Q_INVOKABLE void requestLogin(const QString &username, const QString &password);
-    Q_INVOKABLE void requestRegister(const QString &userType, const QString &username, const QString &password,
-                                     const QString &phone, const QString &address, int age, const QString &gender);
+    Q_INVOKABLE void requestLogin(const QString &profession,
+                                  const QString &username,
+                                  const QString &password);
+    Q_INVOKABLE void requestRegister(const QString &profession,
+                                     const QString &username,
+                                     const QString &password,
+                                     const QString &phone,
+                                     const QString &address,
+                                     int age,
+                                     const QString &gender);
+
     Q_INVOKABLE void submitHealthData(double heightCm, double weightKg, int lungMl, const QString &bp);
     Q_INVOKABLE void setRemainingAttempts(int attempts);
+
+    // 个人信息获取与修改
+    Q_INVOKABLE void getPatientInfo(QJSValue callback); // 不要加 const
+    Q_INVOKABLE void updatePatientInfo(const QString &username,
+                                       const QString &phone,
+                                       const QString &address,
+                                       const QString &age,
+                                       const QString &gender,
+                                       QJSValue callback); // 不要加 const
 
     // getters
     bool isAuthenticated() const;
     int remainingAttempts() const;
     int currentUserId() const;
     UserType currentUserType() const { return m_userType; }
+
+    void setDatabase(DatabaseManager* db) { dbManager = db; }
+
+    static QSqlDatabase getProfessionDatabase(const QString& profession);
 
 signals:
     void loginSuccess(int userId, AuthManager::UserType userType);
@@ -45,6 +69,10 @@ signals:
 
     void healthSubmitSuccess(double bmi, const QString &lungLevel, const QString &bpLevel, const QString &overall);
     void healthSubmitFailed(const QString &reason);
+
+    // 个人信息修改结果信号
+    void updatePatientInfoSuccess();
+    void updatePatientInfoFailed(const QString &reason);
 
     void isAuthenticatedChanged();
     void remainingAttemptsChanged();
@@ -84,6 +112,7 @@ private:
     void processHealthSubmitResponse(const QJsonObject &resp);
 
 private:
+    DatabaseManager* dbManager = nullptr;
     QNetworkAccessManager m_nam;
     QTcpSocket m_socket;
     QByteArray m_pendingBuffer;
