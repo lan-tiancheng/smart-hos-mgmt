@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QTimer>
 #include <QJSValue>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 // ------------------------- 构造与配置 -------------------------
 
@@ -66,14 +68,31 @@ void AuthManager::requestRegister(const QString &profession, const QString &user
     obj["age"] = age;
     obj["gender"] = gender;
 
+    const QString path = "/api/auth/register";
+    const QUrl url(m_apiBase + path);
+    qDebug() << "POST" << url.toString() << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
     // 发送 HTTP 请求到后端注册接口
-    QNetworkRequest request(QUrl(m_apiBase + "/api/auth/register"));
+    QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        onHttpRegisterFinished(reply);
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    reply->setProperty("requestPath", path);
+    reply->setProperty("timedOut", false);
+
+    // 可选：单次请求超时保护
+    auto timer = new QTimer(reply);
+    timer->setSingleShot(true);
+    timer->start(15000);
+    connect(timer, &QTimer::timeout, reply, [reply]() {
+        if (reply->isRunning()) {
+            reply->setProperty("timedOut", true);
+            qWarning() << "HTTP request timed out:" << reply->property("requestPath").toString();
+            reply->abort();
+        }
     });
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() { onHttpRegisterFinished(reply); });
 }
 
 void AuthManager::requestLogin(const QString &profession, const QString &username, const QString &password)
@@ -83,13 +102,29 @@ void AuthManager::requestLogin(const QString &profession, const QString &usernam
     obj["username"] = username;
     obj["password"] = password;
 
-    QNetworkRequest request(QUrl(m_apiBase + "/api/auth/login"));
+    const QString path = "/api/auth/login";
+    const QUrl url(m_apiBase + path);
+    qDebug() << "POST" << url.toString() << "payload:" << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+
+    QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        onHttpLoginFinished(reply);
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    reply->setProperty("requestPath", path);
+    reply->setProperty("timedOut", false);
+
+    auto timer = new QTimer(reply);
+    timer->setSingleShot(true);
+    timer->start(15000);
+    connect(timer, &QTimer::timeout, reply, [reply]() {
+        if (reply->isRunning()) {
+            reply->setProperty("timedOut", true);
+            qWarning() << "HTTP request timed out:" << reply->property("requestPath").toString();
+            reply->abort();
+        }
     });
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() { onHttpLoginFinished(reply); });
 }
 
 void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl, const QString &bp)
@@ -101,13 +136,26 @@ void AuthManager::submitHealthData(double heightCm, double weightKg, int lungMl,
     obj["lung"] = lungMl;
     obj["bp"] = bp;
 
-    QNetworkRequest request(QUrl(m_apiBase + "/api/health/submit"));
+    const QString path = "/api/health/submit";
+    QNetworkRequest request(QUrl(m_apiBase + path));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        onHttpHealthSubmitFinished(reply);
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    reply->setProperty("requestPath", path);
+    reply->setProperty("timedOut", false);
+
+    auto timer = new QTimer(reply);
+    timer->setSingleShot(true);
+    timer->start(15000);
+    connect(timer, &QTimer::timeout, reply, [reply]() {
+        if (reply->isRunning()) {
+            reply->setProperty("timedOut", true);
+            qWarning() << "HTTP request timed out:" << reply->property("requestPath").toString();
+            reply->abort();
+        }
     });
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() { onHttpHealthSubmitFinished(reply); });
 }
 
 void AuthManager::getPatientInfo(QJSValue callback)
@@ -122,7 +170,7 @@ void AuthManager::getPatientInfo(QJSValue callback)
         QJsonDocument doc = QJsonDocument::fromJson(data);
         if (doc.isObject()) {
             QJsonObject obj = doc.object();
-            QJsonObject infoObj = obj.value("info").toObject();  // 关键修正
+            QJsonObject infoObj = obj.value("info").toObject();
             QJSValueList args;
             args << QJSValue(infoObj.value("username").toString())
                  << QJSValue(infoObj.value("phone").toString())
@@ -139,8 +187,6 @@ void AuthManager::getPatientInfo(QJSValue callback)
     });
 }
 
-
-
 void AuthManager::updatePatientInfo(const QString &username,
                                     const QString &phone,
                                     const QString &address,
@@ -150,23 +196,33 @@ void AuthManager::updatePatientInfo(const QString &username,
 {
     QJsonObject obj;
     obj["userId"] = m_userId;
-    obj["profession"] = "patient"; // 必须加上
+    obj["profession"] = "patient"; // 后端需要
     obj["username"] = username;
     obj["phone"] = phone;
     obj["address"] = address;
     obj["age"] = age.toInt();
     obj["gender"] = gender;
 
-    QNetworkRequest request(QUrl(m_apiBase + "/api/patient/update"));
+    const QString path = "/api/patient/update";
+    QNetworkRequest request(QUrl(m_apiBase + path));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson());
-    connect(reply, &QNetworkReply::finished, this, [reply, callback]()mutable {
+    QNetworkReply* reply = m_nam.post(request, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    connect(reply, &QNetworkReply::finished, this, [this, reply, callback]() mutable {
         QByteArray data = reply->readAll();
         reply->deleteLater();
+
         QJsonDocument doc = QJsonDocument::fromJson(data);
         QJsonObject resp = doc.object();
         bool success = resp.value("success").toBool();
+        QString reason = resp.value("reason").toString();
+
+        if (success) {
+            emit updatePatientInfoSuccess();
+        } else {
+            emit updatePatientInfoFailed(reason.isEmpty() ? QStringLiteral("更新失败") : reason);
+        }
+
         if (callback.isCallable())
             callback.call(QJSValueList() << QJSValue(success));
     });
@@ -273,17 +329,34 @@ void AuthManager::handleHttpReply(QNetworkReply* reply,
                                   std::function<void(const QJsonObject&)> onSuccess,
                                   std::function<void(const QString&)> onError)
 {
+    const auto path = reply->property("requestPath").toString();
+    const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    const bool timedOut = reply->property("timedOut").toBool();
+
+    QByteArray data = reply->readAll(); // 无论成功失败都先把响应体取出来，避免丢失
     if (reply->error() != QNetworkReply::NoError) {
-        if (reply->property("timedOut").toBool()) {
+        // 尝试从响应体里解析更具体的错误信息（后端返回 {"error": "..."}）
+        QString serverMsg;
+        QJsonParseError perr{};
+        QJsonDocument pd = QJsonDocument::fromJson(data, &perr);
+        if (perr.error == QJsonParseError::NoError && pd.isObject()) {
+            serverMsg = pd.object().value("error").toString();
+        }
+        qWarning() << "HTTP" << path << "status" << status
+                   << "error:" << reply->errorString()
+                   << "body:" << data;
+
+        if (timedOut) {
             onError(QStringLiteral("请求超时，请检查网络或服务器是否运行"));
         } else {
-            onError(reply->errorString());
+            onError(serverMsg.isEmpty() ? reply->errorString() : serverMsg);
         }
         reply->deleteLater();
         return;
     }
 
-    QByteArray data = reply->readAll();
+    qDebug() << "HTTP" << path << "status" << status << "resp:" << data;
+
     QJsonDocument d = QJsonDocument::fromJson(data);
     if (!d.isObject()) {
         onError(QStringLiteral("响应格式错误。"));
@@ -318,11 +391,18 @@ void AuthManager::processLoginResponse(const QJsonObject &resp)
 
 void AuthManager::processRegisterResponse(const QJsonObject &resp)
 {
+    // 兼容两种格式：
+    // 1) { "success": true, "id": 123 }
+    // 2) { "id": 123 }
     bool success = resp.value("success").toBool();
+    if (!success && resp.contains("id"))
+        success = true;
+
     if (success) {
         emit registerSuccess();
     } else {
-        emit registerFailed(resp.value("reason").toString(QStringLiteral("注册失败")));
+        const QString reason = resp.value("reason").toString(QStringLiteral("注册失败"));
+        emit registerFailed(reason);
     }
 }
 

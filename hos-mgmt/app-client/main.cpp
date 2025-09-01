@@ -9,9 +9,9 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-
     // DatabaseManager dbManager("smart_hos_mgmt.db");
     AuthManager authManager;
+    // 确保端口与 Flask server 一致（server.py 默认 8080）
     authManager.setApiBase("http://127.0.0.1:8080");
     // authManager.setDatabase(&dbManager);
 

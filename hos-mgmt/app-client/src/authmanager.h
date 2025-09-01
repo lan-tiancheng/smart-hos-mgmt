@@ -7,6 +7,7 @@
 #include <QTcpSocket>
 #include <QJsonObject>
 #include <QJSValue>
+#include <QSqlDatabase>
 #include "databasemanager.h"
 
 class AuthManager : public QObject
@@ -111,7 +112,7 @@ private:
     void processHealthSubmitResponse(const QJsonObject &resp);
 
 private:
-    DatabaseManager* dbManager;
+    DatabaseManager* dbManager = nullptr;
     QNetworkAccessManager m_nam;
     QTcpSocket m_socket;
     QByteArray m_pendingBuffer;

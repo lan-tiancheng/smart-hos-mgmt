@@ -985,14 +985,14 @@ moc_authmanager.cpp: ../../../app-client/src/authmanager.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/qjsvalue.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/qtqmlglobal.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/qtqml-config.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlDatabase \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqldatabase.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsqlglobal.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsql-config.h \
 		../../../app-client/src/databasemanager.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlError \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqlerror.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsqlglobal.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsql-config.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlDatabase \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqldatabase.h \
 		moc_predefs.h \
 		/opt/Qt/5.15.2/gcc_64/bin/moc
 	/opt/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include /home/lan/smart-hos-mgmt/hos-mgmt/build/Desktop_Qt_5_15_2_GCC_64bit-Debug/app-client/moc_predefs.h -I/opt/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I/home/lan/smart-hos-mgmt/hos-mgmt/app-client -I/opt/Qt/5.15.2/gcc_64/include -I/opt/Qt/5.15.2/gcc_64/include/QtMultimedia -I/opt/Qt/5.15.2/gcc_64/include/QtQuick -I/opt/Qt/5.15.2/gcc_64/include/QtWidgets -I/opt/Qt/5.15.2/gcc_64/include/QtGui -I/opt/Qt/5.15.2/gcc_64/include/QtQmlModels -I/opt/Qt/5.15.2/gcc_64/include/QtQml -I/opt/Qt/5.15.2/gcc_64/include/QtNetwork -I/opt/Qt/5.15.2/gcc_64/include/QtSql -I/opt/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../../../app-client/src/authmanager.h -o moc_authmanager.cpp
@@ -1218,14 +1218,14 @@ main.o: ../../../app-client/main.cpp /opt/Qt/5.15.2/gcc_64/include/QtGui/QGuiApp
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/QJSValue \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlDatabase \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqldatabase.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsqlglobal.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsql-config.h \
 		../../../app-client/src/databasemanager.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlError \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqlerror.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsqlglobal.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsql-config.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlDatabase \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqldatabase.h \
 		../../../app-client/src/asruploader.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../../app-client/main.cpp
 
@@ -1508,14 +1508,14 @@ authmanager.o: ../../../app-client/src/authmanager.cpp ../../../app-client/src/a
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/qjsvalue.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/qtqmlglobal.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtQml/qtqml-config.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlDatabase \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqldatabase.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsqlglobal.h \
+		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsql-config.h \
 		../../../app-client/src/databasemanager.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlError \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqlerror.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsqlglobal.h \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qtsql-config.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlDatabase \
-		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqldatabase.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtCore/qjsondocument.h \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/QSqlQuery \
 		/opt/Qt/5.15.2/gcc_64/include/QtSql/qsqlquery.h \
