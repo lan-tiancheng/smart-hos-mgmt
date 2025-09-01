@@ -10,7 +10,7 @@ Page {
         // 数据由接口返回
     }
 
-    /*Component.onCompleted: {
+    Component.onCompleted: {
         // 获取医生列表并排班
         client.getDoctorList(function(list){
             doctorModel.clear()
@@ -18,7 +18,7 @@ Page {
                 doctorModel.append(list[i])
             }
         })
-    }*/
+    }
 
     ListView {
         anchors.fill: parent
