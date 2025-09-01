@@ -10,6 +10,7 @@
         <file>qml/PatientHomeScreen.qml</file>
         <file>qml/DoctorHomeScreen.qml</file>
         <file>qml/DrugSearchScreen.qml</file>
+        <file>qml/GLMAiChatScreen.qml</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

@@ -45,6 +45,7 @@ DISTFILES += \
     qml/DoctorHomeScreen.qml \
     qml/DoctorListScreen.qml \
     qml/DrugSearchScreen.qml \
+    qml/GLMAiChatScreen.qml \
     qml/HealthInputScreen.qml \
     qml/LoginScreen.qml \
     qml/Main.qml \

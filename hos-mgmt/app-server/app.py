@@ -2,24 +2,28 @@
 from flask import Flask, request, jsonify
 import os
 from datetime import datetime
-from flask import request, jsonify
-from infra.sqlite_store import get_db
 
-# 首次使用 SQLite 初始化
-from infra.sqlite_store import init_db
+# SQLite 初始化与服务导入
+from infra.sqlite_store import get_db, init_db
 init_db()
-
 from services.auth_service import AuthService
+
+# 智谱AI SDK导入
+from zai import ZhipuAiClient
 
 app = Flask(__name__)
 
 auth_svc = AuthService()
 
+# 智谱AI客户端初始化（请替换为你的API KEY）
+ZHIPUAI_API_KEY = os.environ.get("ZHIPUAI_API_KEY", "bf1b48412dd44f499e47b5ba3f85da8f.HiG3WMp9h64Bho8v")
+glm_client = ZhipuAiClient(api_key=ZHIPUAI_API_KEY)
+
 # 登录接口
 @app.route("/api/auth/login", methods=["POST"])
 def api_auth_login():
     data = request.get_json(silent=True) or {}
-    profession = str(data.get("userType", "")).strip()  # 修改点
+    profession = str(data.get("userType", "")).strip()
     username = str(data.get("username", "")).strip()
     password = str(data.get("password", "")).strip()
     if not username or not password or not profession:
@@ -31,7 +35,7 @@ def api_auth_login():
 
     return jsonify(success=True, userId=user["id"], userType=profession)
 
-#注册
+# 注册接口
 @app.route("/api/auth/register", methods=["POST"])
 def register_user():
     data = request.json
@@ -51,12 +55,11 @@ def register_user():
         return jsonify({"error": err}), 400
     return jsonify({"id": uid}), 200
 
-
 # 获取患者信息
 @app.route("/api/patient/info", methods=["GET"])
 def api_patient_info():
     user_id = request.args.get("userId", type=int)
-    profession = request.args.get("profession", type=str)  # 建议加上
+    profession = request.args.get("profession", type=str)
     info = auth_svc.get_patient_info(profession, user_id)
     if not info:
         return jsonify(success=False, reason="用户不存在"), 404
@@ -67,7 +70,7 @@ def api_patient_info():
 def api_patient_update():
     data = request.json
     user_id = data.get("userId")
-    profession = data.get("profession")  # 建议加上
+    profession = data.get("profession")
     username = data.get("username")
     phone = data.get("phone")
     address = data.get("address")
@@ -82,8 +85,6 @@ def submit_health():
     import re
     data = request.get_json(silent=True) or {}
 
-    # 不再需要 profession/userType 参数
-    # 只检查 userId
     try:
         user_id = int(data.get("userId", 0))
         height = float(data.get("height", 0))
@@ -151,9 +152,8 @@ def submit_health():
         flags.append("肺活量")
     overall = "健康" if not flags else "需关注：" + "、".join(flags)
 
-    # 保存到 SQLite 健康表（用默认库，不分职业）
-    from infra.sqlite_store import get_db
-    conn = get_db()  # 不传参数
+    # 保存到 SQLite 健康表
+    conn = get_db()
     c = conn.cursor()
     c.execute("""
         INSERT INTO health (user_id, height, weight, lung, bp, bmi, bmiLevel, bpLevel, lungLevel, overall, time)
@@ -168,6 +168,27 @@ def submit_health():
                    lungLevel=lung_level,
                    bpLevel=bp_level,
                    overall=overall)
+
+# 智谱GLM大语言模型接口
+@app.route("/glm_chat", methods=["POST"])
+def glm_chat():
+    data = request.get_json(silent=True) or {}
+    question = data.get("question", "")
+    if not question:
+        return jsonify({"reply": "问题内容为空"}), 400
+    try:
+        response = glm_client.chat.completions.create(
+            model="glm-4-air-250414",
+            messages=[
+                {"role": "system", "content": "你是一个县浩田开发的，李融超（其男友）合作的智能医疗助手，清保证你的回答在70字以内。"},
+                {"role": "user", "content": question}
+            ],
+            temperature=0.6
+        )
+        reply = response.choices[0].message.content
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"reply": "调用大模型失败: {}".format(str(e))}), 500
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8080, debug=True)

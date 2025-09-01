@@ -77,6 +77,7 @@ DIST          = ../../../app-client/qml/AppointmentScreen.qml \
 		../../../app-client/qml/DoctorHomeScreen.qml \
 		../../../app-client/qml/DoctorListScreen.qml \
 		../../../app-client/qml/DrugSearchScreen.qml \
+		../../../app-client/qml/GLMAiChatScreen.qml \
 		../../../app-client/qml/HealthInputScreen.qml \
 		../../../app-client/qml/LoginScreen.qml \
 		../../../app-client/qml/Main.qml \
@@ -704,6 +705,7 @@ qrc_client.cpp: ../../../app-client/client.qrc \
 		../../../app-client/qml/PatientProfileScreen.qml \
 		../../../app-client/qml/DoctorListScreen.qml \
 		../../../app-client/qml/PatientHomeScreen.qml \
+		../../../app-client/qml/GLMAiChatScreen.qml \
 		../../../app-client/qml/Main.qml \
 		../../../app-client/qml/AppointmentScreen.qml \
 		../../../app-client/qml/DrugSearchScreen.qml \

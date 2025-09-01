@@ -82,6 +82,18 @@ Page {
                 onClicked: mainStackView.push("OnlinePayScreen.qml")
                 Layout.preferredWidth: 140
             }
+            Button {
+                text: "线上支付"
+                icon.source: "qrc:/icons/pay.svg"
+                onClicked: mainStackView.push("OnlinePayScreen.qml")
+                Layout.preferredWidth: 140
+            }
+            Button {
+                text: "医疗助手"
+                icon.source: "qrc:/icons/ai.svg"
+                onClicked: mainStackView.push("GLMAiChatScreen.qml")
+                Layout.preferredWidth: 140
+            }
         }
     }
 }
