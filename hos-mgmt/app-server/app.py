@@ -2,7 +2,17 @@
 from flask import Flask, request, jsonify
 import os
 from datetime import datetime
-
+os.environ.pop("HTTP_PROXY", None)
+os.environ.pop("HTTPS_PROXY", None)
+os.environ.pop("http_proxy", None)
+os.environ.pop("https_proxy", None)
+os.environ.pop("ALL_PROXY", None)  # <- 关键
+print("="*80)
+print("当前代理设置:")
+print(f"HTTP_PROXY: {os.environ.get('HTTP_PROXY', '未设置')}")
+print(f"HTTPS_PROXY: {os.environ.get('HTTPS_PROXY', '未设置')}")
+print(f"ALL_PROXY: {os.environ.get('ALL_PROXY', '未设置')}")
+print("="*80)
 # SQLite 初始化与服务导入
 from infra.sqlite_store import get_db, init_db
 init_db()
@@ -15,10 +25,15 @@ app = Flask(__name__)
 
 auth_svc = AuthService()
 
-# 智谱AI客户端初始化（请替换为你的API KEY）
+# 智谱AI客户端初始化
 ZHIPUAI_API_KEY = os.environ.get("ZHIPUAI_API_KEY", "bf1b48412dd44f499e47b5ba3f85da8f.HiG3WMp9h64Bho8v")
-glm_client = ZhipuAiClient(api_key=ZHIPUAI_API_KEY)
 
+# 直接创建客户端，不使用任何代理
+glm_client = ZhipuAiClient(
+    api_key=ZHIPUAI_API_KEY
+)
+
+# ... 其余代码保持不变 ...
 # 登录接口
 @app.route("/api/auth/login", methods=["POST"])
 def api_auth_login():
@@ -76,7 +91,10 @@ def api_patient_update():
     address = data.get("address")
     age = data.get("age")
     gender = data.get("gender")
-    ok = auth_svc.update_patient_info(profession, user_id, username, phone, address, age, gender)
+    dob = data.get("dob")
+    id_card = data.get("idCard")
+    email = data.get("email")
+    ok = auth_svc.update_patient_info(profession, user_id, username, phone, address, age, gender, dob, id_card, email)
     return jsonify(success=ok)
 
 # 健康体检提交接口

@@ -29,7 +29,7 @@ Page {
             Button {
                 text: "个人信息"
                 icon.source: "qrc:/icons/profile.svg"
-                onClicked: mainStackView.push("PatientProfileScreen.qml")
+                onClicked: mainStackView.push("PersonalInformationEditing.qml")
                 Layout.preferredWidth: 150
             }
         }
@@ -43,15 +43,10 @@ Page {
             Button {
                 text: "挂号"
                 icon.source: "qrc:/icons/register.svg"
-                onClicked: mainStackView.push("DoctorListScreen.qml")
+                onClicked: mainStackView.push("PatientAppointmentScreen.qml")
                 Layout.preferredWidth: 140
             }
-            Button {
-                text: "查看医生信息"
-                icon.source: "qrc:/icons/doctor.svg"
-                onClicked: mainStackView.push("DoctorInfoScreen.qml")
-                Layout.preferredWidth: 140
-            }
+
             Button {
                 text: "查看病例"
                 icon.source: "qrc:/icons/case.svg"
@@ -61,7 +56,7 @@ Page {
             Button {
                 text: "预约就诊"
                 icon.source: "qrc:/icons/appointment.svg"
-                onClicked: mainStackView.push("AppointmentScreen.qml")
+                onClicked: mainStackView.push("ForwardAppointment.qml")
                 Layout.preferredWidth: 140
             }
             Button {
@@ -82,16 +77,18 @@ Page {
                 onClicked: mainStackView.push("OnlinePayScreen.qml")
                 Layout.preferredWidth: 140
             }
-            Button {
-                text: "线上支付"
-                icon.source: "qrc:/icons/pay.svg"
-                onClicked: mainStackView.push("OnlinePayScreen.qml")
-                Layout.preferredWidth: 140
-            }
+
             Button {
                 text: "医疗助手"
                 icon.source: "qrc:/icons/ai.svg"
                 onClicked: mainStackView.push("GLMAiChatScreen.qml")
+                Layout.preferredWidth: 140
+            }
+
+            Button {
+                text: "语音测试"
+                icon.source: "qrc:/icons/test.svg"
+                onClicked: mainStackView.push("VoiceTest.qml")
                 Layout.preferredWidth: 140
             }
         }
