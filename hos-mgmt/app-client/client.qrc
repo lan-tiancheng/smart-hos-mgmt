@@ -11,6 +11,11 @@
         <file>qml/DoctorHomeScreen.qml</file>
         <file>qml/DrugSearchScreen.qml</file>
         <file>qml/GLMAiChatScreen.qml</file>
+        <file>qml/PatientChatScreen.qml</file>
+        <file>qml/ConversationListScreen.qml</file>
+        <file>qml/DoctorChatScreen.qml</file>
+        <file>qml/DoctorConversationListScreen.qml</file>
+        <file>qml/LoginScreen.qrc</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

@@ -4,7 +4,8 @@ QT       += core gui \
     multimedia \
     quick multimedia \
     core gui quick qml multimedia network \
-    sql
+    sql\
+    websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,18 +20,29 @@ SOURCES += \
     client.cpp \
     src/asruploader.cpp \
     src/authmanager.cpp \
+    src/chat/ChatClient.cpp \
+    src/chat/QMLChatClient.cpp \
     src/databasemanager.cpp \
-    src/recorderprocess.cpp
+    src/recorderprocess.cpp \
+    src/ui/ChatWindow.cpp
+
 
 HEADERS += \
     client.h \
     src/asruploader.h \
     src/authmanager.h \
+    src/chat/ChatClient.h \
+    src/chat/QMLChatClient.h \
     src/databasemanager.h \
-    src/recorderprocess.h
+    src/recorderprocess.h \
+    src/ui/ChatWindow.h\
+
 
 FORMS += \
     client.ui
+
+INCLUDEPATH += \
+    src
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -40,8 +52,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     client.qrc
 
+RESOURCES += qml/LoginScreen.qrc
+
 DISTFILES += \
     qml/AppointmentScreen.qml \
+    qml/ConversationListScreen.qml \
+    qml/DoctorChatScreen.qml \
+    qml/DoctorConversationListScreen.qml \
     qml/DoctorHomeScreen.qml \
     qml/DoctorListScreen.qml \
     qml/DrugSearchScreen.qml \
@@ -49,6 +66,7 @@ DISTFILES += \
     qml/HealthInputScreen.qml \
     qml/LoginScreen.qml \
     qml/Main.qml \
+    qml/PatientChatScreen.qml \
     qml/PatientHomeScreen.qml \
     qml/PatientProfileScreen.qml \
     qml/components/VoiceInputButton.qml

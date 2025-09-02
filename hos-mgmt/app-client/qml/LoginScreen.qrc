@@ -1,3 +1,47 @@
 <RCC>
-    <qresource prefix="/"/>
+    <qresource prefix="/client/qml/qml">
+        <file>Main.qml</file>
+        <file>LoginScreen.qml</file>
+        <file>AppointmentScreen.qml</file>
+        <file>ConversationListScreen.qml</file>
+        <file>DoctorChatScreen.qml</file>
+        <file>DoctorConversationListScreen.qml</file>
+        <file>DoctorHomeScreen.qml</file>
+        <file>DoctorListScreen.qml</file>
+        <file>DrugSearchScreen.qml</file>
+        <file>GLMAiChatScreen.qml</file>
+        <file>HealthInputScreen.qml</file>
+        <file>PatientChatScreen.qml</file>
+        <file>PatientHomeScreen.qml</file>
+        <file>PatientProfileScreen.qml</file>
+        <file>VoiceTest.qml</file>
+        <file>images/hero.svg</file>
+        <file>images/icon_user.svg</file>
+        <file>images/icon_lock.svg</file>
+        <file>images/avatar.jpeg</file>
+        <file>images/avatar_02.jpg</file>
+        <file>images/ai.svg</file>
+        <file>images/appointment.svg</file>
+        <file>images/case.svg</file>
+        <file>images/doctor.svg</file>
+        <file>images/drug.svg</file>
+        <file>images/health.svg</file>
+        <file>images/hospital.svg</file>
+        <file>images/pay.svg</file>
+        <file>images/profile.svg</file>
+        <file>images/register.svg</file>
+        <file>images/room.svg</file>
+        <file>images/calendar.svg</file>
+        <file>images/clinic.svg</file>
+        <file>images/department.svg</file>
+        <file>images/svg/icon_calendar.svg</file>
+        <file>images/svg/icon_clinic.svg</file>
+        <file>images/svg/icon_department.svg</file>
+        <file>images/svg/icon_doctor.svg</file>
+        <file>images/svg/icon_empty.svg</file>
+        <file>images/svg/icon_glow.svg</file>
+        <file>images/svg/icon_hospital.svg</file>
+        <file>images/svg/icon_search.svg</file>
+        <file>images/svg/icon_star.svg</file>
+    </qresource>
 </RCC>

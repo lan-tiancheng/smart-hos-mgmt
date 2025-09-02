@@ -48,6 +48,10 @@ DISTFILES += \
     asr_service.py \
     domain/_init_.py \
     domain/entities.py \
+    infra/_init_.py \
     infra/auth_service.py \
+    infra/doctor_store.py \
     infra/sqlite_store.py \
-    services/auth_service.py
+    routes_doctor_chat.py \
+    services/auth_service.py \
+    services/chat_service.py

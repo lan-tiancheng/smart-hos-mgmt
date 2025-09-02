@@ -77,9 +77,13 @@ DIST          = ../../../app-server/app.py \
 		../../../app-server/asr_service.py \
 		../../../app-server/domain/_init_.py \
 		../../../app-server/domain/entities.py \
+		../../../app-server/infra/_init_.py \
 		../../../app-server/infra/auth_service.py \
+		../../../app-server/infra/doctor_store.py \
 		../../../app-server/infra/sqlite_store.py \
+		../../../app-server/routes_doctor_chat.py \
 		../../../app-server/services/auth_service.py \
+		../../../app-server/services/chat_service.py \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt/5.15.2/gcc_64/mkspecs/common/linux.conf \
