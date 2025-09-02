@@ -2,20 +2,11 @@
 from flask import Flask, request, jsonify
 import os
 from datetime import datetime
-os.environ.pop("HTTP_PROXY", None)
-os.environ.pop("HTTPS_PROXY", None)
-os.environ.pop("http_proxy", None)
-os.environ.pop("https_proxy", None)
-os.environ.pop("ALL_PROXY", None)  # <- 关键
-print("="*80)
-print("当前代理设置:")
-print(f"HTTP_PROXY: {os.environ.get('HTTP_PROXY', '未设置')}")
-print(f"HTTPS_PROXY: {os.environ.get('HTTPS_PROXY', '未设置')}")
-print(f"ALL_PROXY: {os.environ.get('ALL_PROXY', '未设置')}")
-print("="*80)
+
 # SQLite 初始化与服务导入
 from infra.sqlite_store import get_db, init_db
 init_db()
+
 from services.auth_service import AuthService
 
 # 智谱AI SDK导入
@@ -25,15 +16,10 @@ app = Flask(__name__)
 
 auth_svc = AuthService()
 
-# 智谱AI客户端初始化
+# 智谱AI客户端初始化（请替换为你的API KEY）
 ZHIPUAI_API_KEY = os.environ.get("ZHIPUAI_API_KEY", "bf1b48412dd44f499e47b5ba3f85da8f.HiG3WMp9h64Bho8v")
+glm_client = ZhipuAiClient(api_key=ZHIPUAI_API_KEY)
 
-# 直接创建客户端，不使用任何代理
-glm_client = ZhipuAiClient(
-    api_key=ZHIPUAI_API_KEY
-)
-
-# ... 其余代码保持不变 ...
 # 登录接口
 @app.route("/api/auth/login", methods=["POST"])
 def api_auth_login():
@@ -49,11 +35,88 @@ def api_auth_login():
         return jsonify(success=False, reason=err, remainingAttempts=4), 401
 
     return jsonify(success=True, userId=user["id"], userType=profession)
+# 获取医生信息
+@app.route("/api/doctor/info", methods=["GET"])
+def api_doctor_info():
+    doctor_id = request.args.get("doctorId", type=str)
+    if not doctor_id:
+        return jsonify(success=False, reason="doctorId为空"), 400
+
+    conn = get_db("doctor")
+    c = conn.cursor()
+    c.execute("SELECT id, name, hospital, department, profile, work_time, fee, max_patients, photo FROM doctor WHERE id=?", (doctor_id,))
+    row = c.fetchone()
+    conn.close()
+
+    if not row:
+        return jsonify(success=False, reason="医生不存在"), 404
+
+    info = {
+        "id": row[0],
+        "name": row[1],
+        "hospital": row[2],
+        "department": row[3],
+        "profile": row[4],
+        "work_time": row[5],
+        "fee": row[6],
+        "max_patients": row[7],
+        "photo": row[8]
+    }
+    return jsonify(success=True, info=info)
+
+
+# 更新医生信息
+@app.route("/api/doctor/update", methods=["POST"])
+def api_doctor_update():
+    data = request.get_json(silent=True) or {}
+    doctor_id = data.get("id")
+    if not doctor_id:
+        return jsonify(success=False, reason="医生ID为空"), 400
+
+    conn = get_db("doctor")
+    c = conn.cursor()
+    # 如果医生不存在，则插入新记录，否则更新
+    c.execute("SELECT 1 FROM doctor WHERE id=?", (doctor_id,))
+    if c.fetchone():
+        c.execute("""
+            UPDATE doctor SET
+                name=?, hospital=?, department=?, profile=?, work_time=?, fee=?, max_patients=?, photo=?
+            WHERE id=?
+        """, (
+            data.get("name"),
+            data.get("hospital"),
+            data.get("department"),
+            data.get("profile"),
+            data.get("work_time"),
+            data.get("fee"),
+            data.get("max_patients"),
+            data.get("photo"),
+            doctor_id
+        ))
+    else:
+        c.execute("""
+            INSERT INTO doctor (id, name, hospital, department, profile, work_time, fee, max_patients, photo)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            doctor_id,
+            data.get("name"),
+            data.get("hospital"),
+            data.get("department"),
+            data.get("profile"),
+            data.get("work_time"),
+            data.get("fee"),
+            data.get("max_patients"),
+            data.get("photo")
+        ))
+    conn.commit()
+    conn.close()
+    return jsonify(success=True)
 
 # 注册接口
 @app.route("/api/auth/register", methods=["POST"])
 def register_user():
     data = request.json
+    print("Received register request:", data)
     profession = data.get("userType")
     username = data.get("username")
     password = data.get("password")
@@ -83,19 +146,28 @@ def api_patient_info():
 # 修改患者信息
 @app.route("/api/patient/update", methods=["POST"])
 def api_patient_update():
-    data = request.json
-    user_id = data.get("userId")
-    profession = data.get("profession")
-    username = data.get("username")
-    phone = data.get("phone")
-    address = data.get("address")
-    age = data.get("age")
-    gender = data.get("gender")
-    dob = data.get("dob")
-    id_card = data.get("idCard")
-    email = data.get("email")
-    ok = auth_svc.update_patient_info(profession, user_id, username, phone, address, age, gender, dob, id_card, email)
-    return jsonify(success=ok)
+    try:
+        data = request.json
+        user_id = data.get("userId")
+        profession = data.get("profession")
+        username = data.get("username")
+        phone = data.get("phone")
+        address = data.get("address")
+        age = data.get("age")
+        gender = data.get("gender")
+        dob = data.get("dob")
+        id_card = data.get("idCard")
+        email = data.get("email")
+
+        ok, reason = auth_svc.update_patient_info(
+            profession, user_id, username, phone, address, age, gender,
+            dob, id_card, email
+        )
+        return jsonify(success=ok, reason=reason)
+    except Exception as e:
+        # 捕获 Flask 全局异常，确保返回 JSON
+        print("接口异常:", e)
+        return jsonify(success=False, reason=str(e)), 500
 
 # 健康体检提交接口
 @app.route("/api/health/submit", methods=["POST"])
