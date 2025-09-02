@@ -7,7 +7,7 @@
 *****************************************************************************/
 
 #include <memory>
-#include "../../src/authmanager.h"
+#include "../../../../../smart-hos-mgmt完结版/hos-mgmt/app-client/src/authmanager.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)

@@ -23,6 +23,10 @@
         <file>qml/OnlinePayScreen.qml</file>
         <file>qml/DocAdvice.qml</file>
         <file>qml/AppointmentCheck.qml</file>
+        <file>qml/ConversationListScreen.qml</file>
+        <file>qml/DoctorChatScreen.qml</file>
+        <file>qml/DoctorConversationListScreen.qml</file>
+        <file>qml/PatientChatScreen.qml</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
