@@ -4,6 +4,12 @@
         <file>qml/LoginScreen.qml</file>
         <file>qml/HealthInputScreen.qml</file>
         <file>qml/VoiceTest.qml</file>
+        <file>qml/PatientProfileScreen.qml</file>
+        <file>qml/DoctorListScreen.qml</file>
+        <file>qml/AppointmentScreen.qml</file>
+        <file>qml/PatientHomeScreen.qml</file>
+        <file>qml/DoctorHomeScreen.qml</file>
+        <file>qml/DrugSearchScreen.qml</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

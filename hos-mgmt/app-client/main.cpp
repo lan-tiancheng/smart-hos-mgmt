@@ -3,13 +3,17 @@
 #include <QQmlContext>
 #include "src/authmanager.h"
 #include "src/asruploader.h"
+// #include "src/databasemanager.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+
+    // DatabaseManager dbManager("smart_hos_mgmt.db");
     AuthManager authManager;
     authManager.setApiBase("http://127.0.0.1:8080");
+    // authManager.setDatabase(&dbManager);
 
     AsrUploader asrUploader;
     asrUploader.setApiBase("http://127.0.0.1:8080");

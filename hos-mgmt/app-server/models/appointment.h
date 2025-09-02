@@ -40,12 +40,16 @@ public:
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
+    QString info() const;
+    void setInfo(const QString&);
+
 private:
     QString m_id;
     QString m_patientId;
     QString m_doctorId;
     QDateTime m_appointmentDateTime;
     AppointmentStatus m_status;
+    QString m_info;
 };
 
 #endif // APPOINTMENT_H
