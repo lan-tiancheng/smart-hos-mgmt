@@ -82,16 +82,19 @@ Page {
                     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
                     xhr.onreadystatechange = function() {
                         if(xhr.readyState===XMLHttpRequest.DONE){
-                            if(xhr.status===200){
-                                var resp=JSON.parse(xhr.responseText)
-                                feedbackLabel.color = resp.success?"green":"red"
-                                feedbackLabel.text = resp.success?"保存成功！":(resp.reason||"保存失败")
-                            } else {
-                                feedbackLabel.color="red"
-                                feedbackLabel.text="请求失败: "+xhr.status
+                            console.log("Response Text:", xhr.responseText)
+                            try {
+                                var resp = JSON.parse(xhr.responseText)
+                                feedbackLabel.color = resp.success ? "green" : "red"
+                                feedbackLabel.text = resp.success ? "保存成功！" : (resp.reason || "保存失败")
+                            } catch(e) {
+                                feedbackLabel.color = "red"
+                                feedbackLabel.text = "JSON 解析错误: " + e + "\n响应内容: " + xhr.responseText
                             }
                         }
                     }
+
+
                     var data = {
                         userId:userId, profession:userType,
                         username:nameField.text, dob:dobField.text,

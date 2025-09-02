@@ -41,6 +41,7 @@ RESOURCES += \
     client.qrc
 
 DISTFILES += \
+    ../../../../smart-hos-mgmt/wechat_qr.png \
     qml/AppointmentScreen.qml \
     qml/DoctorHomeScreen.qml \
     qml/DoctorListScreen.qml \

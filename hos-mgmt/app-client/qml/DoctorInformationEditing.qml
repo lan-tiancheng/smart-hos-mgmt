@@ -6,17 +6,22 @@ import QtQuick.Dialogs 1.3
 
 Page {
     id: editPage
+
     title: "编辑医生信息"
 
+    // 外部可传入医生ID或姓名，用于加载医生信息
+    property string doctorId: ""
+    property string doctorName: ""
+
     property var doctorData: ({
-        id: "D001",
-        name: "张医生",
-        hospital: "市中心医院",
-        department: "内科",
-        profile: "主任医师，擅长心血管疾病",
-        workTime: "周一至周五 上午 8:00-12:00",
-        fee: 30,
-        maxPatients: 20,
+        id: "",
+        name: "",
+        hospital: "",
+        department: "",
+        profile: "",
+        workTime: "",
+        fee: 0,
+        maxPatients: 0,
         photo: ""
     })
 
@@ -28,22 +33,50 @@ Page {
         nameFilters: ["图片文件 (*.jpg *.png *.jpeg)"]
         onAccepted: {
             doctorData.photo = photoDialog.fileUrl
-            photoPreview.source = photoDialog.fileUrl
+            photoPreview.source = doctorData.photo
         }
     }
+
+    // 页面加载时获取医生信息
+    Component.onCompleted: {
+        if (doctorId) {
+            // 使用 doctorId 向后端请求医生信息
+            var xhr = new XMLHttpRequest()
+            xhr.open("GET", "http://127.0.0.1:8080/api/doctor/info?doctorId=" + doctorId)
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    var resp = JSON.parse(xhr.responseText)
+                    if (resp.success && resp.info) {
+                        // 填充界面字段
+                        doctorData.name = resp.info.name
+                        doctorData.hospital = resp.info.hospital
+                        doctorData.department = resp.info.department
+                        doctorData.profile = resp.info.profile
+                        doctorData.workTime = resp.info.workTime
+                        doctorData.fee = resp.info.fee
+                        doctorData.maxPatients = resp.info.maxPatients
+                        doctorData.photo = resp.info.photo
+                        photoPreview.source = doctorData.photo ? doctorData.photo : "qrc:/icons/default-doctor.png"
+                    }
+                }
+            }
+            xhr.send()
+        } else {
+            feedbackLabel.color = "red"
+            feedbackLabel.text = "未指定医生ID"
+        }
+    }
+
 
     // 顶部标题栏
     header: ToolBar {
         height: 60
-        background: Rectangle {
-            color: "#3498db"
-        }
+        background: Rectangle { color: "#3498db" }
 
         RowLayout {
             anchors.fill: parent
             spacing: 10
 
-            // 返回按钮（叉号）
             ToolButton {
                 icon.source: "qrc:/icons/close.svg"
                 icon.color: "white"
@@ -54,49 +87,26 @@ Page {
                     while (p && typeof p.pop !== "function") p = p.parent
                     if (p) p.pop()
                 }
-                background: Rectangle {
-                    color: "transparent"
-                }
+                background: Rectangle { color: "transparent" }
             }
 
-            Label {
-                text: editPage.title
-                font.pixelSize: 20
-                color: "white"
-                Layout.fillWidth: true
-            }
+            Label { text: editPage.title; font.pixelSize: 20; color: "white"; Layout.fillWidth: true }
 
-            // 保存按钮
             ToolButton {
                 text: "保存"
                 font.pixelSize: 16
                 font.bold: true
-                contentItem: Text {
-                    text: parent.text
-                    color: "white"
-                    font: parent.font
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                onClicked: {
-                    // 这里应该实现保存逻辑
-                    console.log("保存医生信息:", JSON.stringify(doctorData))
-
-                    // 显示保存成功消息
-                    saveSuccessDialog.open()
-                }
-                background: Rectangle {
-                    color: "transparent"
-                }
+                contentItem: Text { text: parent.text; color: "white"; font: parent.font }
+                onClicked: saveButton.clicked()
+                background: Rectangle { color: "transparent" }
             }
         }
     }
 
-    // 保存成功对话框
     MessageDialog {
         id: saveSuccessDialog
         title: "保存成功"
-        text: "医生信息已成功更新！"
+        text: ""
         icon: StandardIcon.Information
         onAccepted: {
             var p = editPage.parent
@@ -105,7 +115,6 @@ Page {
         }
     }
 
-    // 主内容区域
     ScrollView {
         anchors.fill: parent
         anchors.margins: 20
@@ -124,7 +133,6 @@ Page {
                     width: parent.width
                     spacing: 15
 
-                    // 照片预览
                     Rectangle {
                         id: photoContainer
                         width: 150
@@ -143,7 +151,6 @@ Page {
                         }
                     }
 
-                    // 上传按钮
                     Button {
                         text: "选择照片"
                         icon.source: "qrc:/icons/camera.svg"
@@ -166,7 +173,6 @@ Page {
 
                     Label { text: "医生编号:" }
                     TextField {
-                        id: idField
                         text: doctorData.id
                         Layout.fillWidth: true
                         onTextChanged: doctorData.id = text
@@ -174,7 +180,6 @@ Page {
 
                     Label { text: "姓名:" }
                     TextField {
-                        id: nameField
                         text: doctorData.name
                         Layout.fillWidth: true
                         onTextChanged: doctorData.name = text
@@ -182,7 +187,6 @@ Page {
 
                     Label { text: "所属医院:" }
                     ComboBox {
-                        id: hospitalCombo
                         model: ["市中心医院", "社区医院", "儿童医院"]
                         currentIndex: model.indexOf(doctorData.hospital)
                         Layout.fillWidth: true
@@ -191,7 +195,6 @@ Page {
 
                     Label { text: "所属科室:" }
                     ComboBox {
-                        id: departmentCombo
                         model: ["内科", "外科", "儿科", "骨科", "眼科", "耳鼻喉科"]
                         currentIndex: model.indexOf(doctorData.department)
                         Layout.fillWidth: true
@@ -211,7 +214,6 @@ Page {
 
                     Label { text: "个人资料:" }
                     TextArea {
-                        id: profileField
                         text: doctorData.profile
                         Layout.fillWidth: true
                         Layout.preferredHeight: 100
@@ -222,7 +224,6 @@ Page {
 
                     Label { text: "上班时间:" }
                     TextField {
-                        id: workTimeField
                         text: doctorData.workTime
                         Layout.fillWidth: true
                         placeholderText: "例如：周一至周五 上午 8:00-12:00"
@@ -235,7 +236,6 @@ Page {
                         ColumnLayout {
                             Label { text: "挂号费用 (元):" }
                             SpinBox {
-                                id: feeField
                                 value: doctorData.fee
                                 from: 0
                                 to: 1000
@@ -247,7 +247,6 @@ Page {
                         ColumnLayout {
                             Label { text: "单日患者上限:" }
                             SpinBox {
-                                id: maxPatientsField
                                 value: doctorData.maxPatients
                                 from: 1
                                 to: 100
@@ -261,19 +260,50 @@ Page {
 
             // 保存按钮区域
             Button {
+                id: saveButton
                 text: "保存修改"
-                font.pixelSize: 16
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: 10
-                Layout.bottomMargin: 20
                 onClicked: {
-                    // 这里应该实现保存逻辑
-                    console.log("保存医生信息:", JSON.stringify(doctorData))
+                    feedbackLabel.color = "red"
+                    feedbackLabel.text = ""
 
-                    // 显示保存成功消息
-                    saveSuccessDialog.open()
+                    if (!doctorData.name) { feedbackLabel.text = "姓名不能为空"; return }
+
+                    var xhr = new XMLHttpRequest()
+                    xhr.open("POST", "http://127.0.0.1:8080/api/doctor/update")
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            try {
+                                var resp = JSON.parse(xhr.responseText)
+                                if (resp.success) {
+                                    if (resp.info && resp.info.id) doctorData.id = resp.info.id
+                                    saveSuccessDialog.text = resp.info ? resp.info : "医生信息已成功更新！"
+                                    saveSuccessDialog.open()
+                                } else {
+                                    feedbackLabel.color = "red"
+                                    feedbackLabel.text = resp.reason || "保存失败"
+                                }
+                            } catch(e) {
+                                feedbackLabel.color = "red"
+                                feedbackLabel.text = "JSON解析错误: " + e + "\n响应内容:" + xhr.responseText
+                            }
+                        }
+                    }
+                    xhr.send(JSON.stringify({
+                        id: doctorData.id,
+                        name: doctorData.name,
+                        hospital: doctorData.hospital,
+                        department: doctorData.department,
+                        profile: doctorData.profile,
+                        workTime: doctorData.workTime,
+                        fee: doctorData.fee,
+                        maxPatients: doctorData.maxPatients,
+                        photo: doctorData.photo
+                    }))
                 }
             }
+
+            Label { id: feedbackLabel; text:""; color:"green"; wrapMode:Text.WordWrap; Layout.fillWidth:true }
         }
     }
 }

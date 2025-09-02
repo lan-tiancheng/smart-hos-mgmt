@@ -46,7 +46,18 @@ Page {
                 }
             }
         }
-
+        Button {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            text: "返回"
+            font.pixelSize: 16
+            onClicked: {
+                // 返回逻辑
+                var p = root.parent
+                while (p && typeof p.pop !== "function") p = p.parent
+                if (p) p.pop()
+            }
+        }
         Label {
             text: "医嘱记录"
             font.pixelSize: 18

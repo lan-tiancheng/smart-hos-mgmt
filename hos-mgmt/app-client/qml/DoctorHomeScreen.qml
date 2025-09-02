@@ -32,6 +32,12 @@ Page {
                 onClicked: mainStackView.push("DoctorInformationEditing.qml")
                 Layout.preferredWidth: 150
             }
+            Button {
+                text: "预约查看"
+                icon.source: "qrc:/icons/App.svg"
+                onClicked: mainStackView.push("AppointmentCheck.qml")
+                Layout.preferredWidth: 150
+            }
         }
 
         GridLayout {

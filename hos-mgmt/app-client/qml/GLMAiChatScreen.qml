@@ -9,6 +9,48 @@ Page {
     property string aiReply: ""
     property bool loading: false
 
+    // 添加顶部标题栏（包含返回按钮）
+    header: ToolBar {
+        height: 60
+        background: Rectangle {
+            color: "#2560e6"
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            spacing: 10
+
+            // 返回按钮
+            ToolButton {
+                icon.source: "qrc:/icons/back.svg" // 使用返回图标
+                icon.color: "white"
+                icon.width: 30
+                icon.height: 30
+                onClicked: {
+                    // 返回逻辑
+                    var p = root.parent
+                    while (p && typeof p.pop !== "function") p = p.parent
+                    if (p) p.pop()
+                }
+                background: Rectangle {
+                    color: "transparent"
+                }
+            }
+
+            // 页面标题
+            Label {
+                text: root.title
+                font.pixelSize: 20
+                color: "white"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            // 右侧占位（保持对称）
+            Item { width: 60 }
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 32
@@ -83,7 +125,18 @@ Page {
                 xhr.send(JSON.stringify({ question: root.userInput }))
             }
         }
-
+        Button {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 50
+            text: "返回"
+            font.pixelSize: 16
+            onClicked: {
+                // 返回逻辑
+                var p = root.parent
+                while (p && typeof p.pop !== "function") p = p.parent
+                if (p) p.pop()
+            }
+        }
         Rectangle {
             color: "#fff"
             radius: 12

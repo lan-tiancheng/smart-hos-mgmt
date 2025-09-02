@@ -17,6 +17,12 @@
         <file>qml/AttendanceManagement.qml</file>
         <file>qml/ForwardAppointment.qml</file>
         <file>qml/DoctorInformationEditing.qml</file>
+        <file>qml/CaseListScreen.qml</file>
+        <file>qml/DoctorDetailScreen.qml</file>
+        <file>qml/DoctorInfoScreen.qml</file>
+        <file>qml/OnlinePayScreen.qml</file>
+        <file>qml/DocAdvice.qml</file>
+        <file>qml/AppointmentCheck.qml</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
